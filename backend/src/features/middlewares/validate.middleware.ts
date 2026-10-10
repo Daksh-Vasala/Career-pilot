@@ -25,11 +25,9 @@ export const validateParams = (schema: z.ZodType<Request["params"]>) => {
     const result = schema.safeParse(req.params);
 
     if (!result.success) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid parameters",
-        errors: result.error.flatten(),
-      });
+       return next(
+        new ApiError(400, "Invalid parameters"),
+      );
     }
 
     req.params = result.data;
@@ -47,4 +45,18 @@ export const validateResumeFile = (
   }
 
   next();
+};
+
+export const validateQuery = (schema: z.ZodType<Request["query"]>) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req.query);
+
+    if (!result.success) {
+       return next(
+        new ApiError(400, "Invalid query parameters"),
+      );
+    }
+
+    next();
+  };
 };

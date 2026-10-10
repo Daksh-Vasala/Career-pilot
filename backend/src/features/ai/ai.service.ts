@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { db } from "../../db/index.ts";
 import { resumes } from "../../db/schema/resume.ts";
 import { ApiError } from "../../utils/api-error.ts";
@@ -60,4 +60,29 @@ export const getResumeAnalysisByIdService = async (
   }
 
   return resumeAnalysis;
+};
+
+export const getResumeAnalysesByResumeIdService = async (
+  resumeId: string,
+  userId: string,
+) => {
+  const [resume] = await db
+    .select()
+    .from(resumes)
+    .where(and(eq(resumes.id, resumeId), eq(resumes.userId, userId)));
+
+  if (!resume) {
+    throw new ApiError(404, "Resume not found");
+  }
+
+  return await db
+    .select()
+    .from(resumeAnalyses)
+    .where(
+      and(
+        eq(resumeAnalyses.resumeId, resumeId),
+        eq(resumeAnalyses.userId, userId),
+      ),
+    )
+    .orderBy(desc(resumeAnalyses.createdAt));
 };

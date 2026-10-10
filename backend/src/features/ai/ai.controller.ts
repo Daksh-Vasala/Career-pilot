@@ -2,8 +2,10 @@ import { Response } from "express";
 import { AuthRequest } from "../../types/express.types.ts";
 import {
   analyzeResumeService,
+  getResumeAnalysesByResumeIdService,
   getResumeAnalysisByIdService,
 } from "./ai.service.ts";
+import { ApiError } from "../../utils/api-error.ts";
 
 export const analyzeResume = async (req: AuthRequest, res: Response) => {
   const { resumeId } = req.body;
@@ -30,7 +32,25 @@ export const getResumeAnalysisById = async (
 
   res.status(200).json({
     success: true,
-    message: "Resume fetched successfully",
+    message: "Resume analysis fetched successfully",
+    data: result,
+  });
+};
+
+export const getResumeAnalysesByResumeId = async (
+  req: AuthRequest,
+  res: Response,
+) => {
+  const resumeId = req.query.resumeId;
+
+  const result = await getResumeAnalysesByResumeIdService(
+    String(resumeId),
+    req.userId!,
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Resume analyses fetched successfully",
     data: result,
   });
 };

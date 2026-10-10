@@ -13,7 +13,11 @@ export const analyzeResumeRequestSchema = z.object({
 });
 
 export const resumeAnalysisIdSchema = z.object({
-  id: z.uuid("Invalid resume ID"),
+  id: z.uuid("Invalid resume analysis ID"),
+});
+
+export const resumeIdQuerySchema = z.object({
+  resumeId: z.uuid("Invalid resume ID"),
 });
 
 export type ResumeAnalysisData = z.infer<typeof resumeAnalysisSchema>;
