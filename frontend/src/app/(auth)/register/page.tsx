@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 import { registerUser } from "@/features/auth/auth.service";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   type RegisterFormValues = z.infer<typeof registerInput>;
@@ -30,6 +31,8 @@ export default function RegisterPage() {
     mode: "onBlur",
   });
 
+  const router = useRouter();
+
   const submitHandler = async (data: RegisterFormValues) => {
     try {
       const res = await registerUser({
@@ -40,6 +43,7 @@ export default function RegisterPage() {
       });
 
       toast.success(res.message || "User registered");
+      router.replace("/dashboard");
     } catch (error) {
       console.log("Error in registering user: ", error);
       toast.error("Something went wrong");

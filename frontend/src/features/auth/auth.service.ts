@@ -23,3 +23,15 @@ export const loginUser = async (data: LoginPayload) => {
 
   return res.data;
 };
+
+export const getUser = async () => {
+  const res = await api.get("/auth/me");
+
+  return res.data;
+};
+
+export const logoutUser = async () => {
+  const res = await api.post("/auth/logout");
+
+  return res.data;
+};

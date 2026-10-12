@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -19,6 +18,7 @@ import { z } from "zod";
 import PasswordInput from "@/features/auth/components/password-input";
 import { loginUser } from "@/features/auth/auth.service";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type LoginFormValues = z.infer<typeof loginInput>;
 export default function LoginPage() {
@@ -31,6 +31,8 @@ export default function LoginPage() {
     mode: "onBlur",
   });
 
+  const router = useRouter()
+
   const submitHandler = async (data: LoginFormValues) => {
     try {
       const res = await loginUser({
@@ -38,6 +40,7 @@ export default function LoginPage() {
         password: data.password,
       });
       toast.success(res.message || "User logged in");
+      router.replace("/dashboard")
     } catch (error) {
       console.log("Error in logging user: ", error);
       toast.error("Something went wrong");
