@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import {
   ArrowRight,
@@ -28,9 +27,24 @@ const features = [
 ];
 
 const applications = [
-  { company: "Acme Corporation", role: "Frontend Developer", status: "Interview", date: "Oct 08" },
-  { company: "Vertex Labs", role: "React Developer", status: "Applied", date: "Oct 06" },
-  { company: "Northstar Digital", role: "Software Engineer", status: "Review", date: "Oct 04" },
+  {
+    company: "Acme Corporation",
+    role: "Frontend Developer",
+    status: "Interview",
+    date: "Oct 08",
+  },
+  {
+    company: "Vertex Labs",
+    role: "React Developer",
+    status: "Applied",
+    date: "Oct 06",
+  },
+  {
+    company: "Northstar Digital",
+    role: "Software Engineer",
+    status: "Review",
+    date: "Oct 04",
+  },
 ];
 
 const card =
@@ -51,8 +65,12 @@ export default function Home() {
         </Link>
 
         <div className="hidden items-center gap-8 text-sm text-muted-foreground sm:flex">
-          <Link href="#features" className="hover:text-primary">Features</Link>
-          <Link href="#how-it-works" className="hover:text-primary">How it works</Link>
+          <Link href="#features" className="hover:text-primary">
+            Features
+          </Link>
+          <Link href="#how-it-works" className="hover:text-primary">
+            How it works
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">
@@ -65,7 +83,9 @@ export default function Home() {
 
       <section className="mx-auto grid max-w-7xl items-center gap-14 px-6 py-16 lg:grid-cols-2 lg:px-10 lg:py-24">
         <div>
-          <div className={`mb-7 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-primary ${card}`}>
+          <div
+            className={`mb-7 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-primary ${card}`}
+          >
             <span className="size-2 rounded-full bg-primary" />
             Your career, organized.
           </div>
@@ -76,8 +96,8 @@ export default function Home() {
           </h1>
 
           <p className="mt-7 max-w-lg text-lg leading-8 text-muted-foreground">
-            Track applications, optimize your resume with AI, and prepare
-            for interviews — all from one focused workspace.
+            Track applications, optimize your resume with AI, and prepare for
+            interviews — all from one focused workspace.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-4">
@@ -98,7 +118,9 @@ export default function Home() {
           </p>
         </div>
 
-        <div className={`rounded-3xl border border-white/70 bg-card p-5 sm:p-8 dark:border-border ${card}`}>
+        <div
+          className={`rounded-3xl border border-white/70 bg-card p-5 sm:p-8 dark:border-border ${card}`}
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">YOUR WORKSPACE</p>
@@ -115,8 +137,13 @@ export default function Home() {
               { label: "Interviews", value: "04" },
               { label: "Resumes", value: "03" },
             ].map((item) => (
-              <div key={item.label} className="rounded-xl border border-border p-3 sm:p-4">
-                <p className="text-xs text-muted-foreground sm:text-sm">{item.label}</p>
+              <div
+                key={item.label}
+                className="rounded-xl border border-border p-3 sm:p-4"
+              >
+                <p className="text-xs text-muted-foreground sm:text-sm">
+                  {item.label}
+                </p>
                 <p className="mt-2 text-2xl font-semibold">{item.value}</p>
               </div>
             ))}
@@ -134,18 +161,28 @@ export default function Home() {
                   key={app.company}
                   className="flex items-center gap-3 rounded-xl border border-border p-3"
                 >
-                  <div className={`flex size-10 shrink-0 items-center justify-center font-semibold text-primary ${inset}`}>
+                  <div
+                    className={`flex size-10 shrink-0 items-center justify-center font-semibold text-primary ${inset}`}
+                  >
                     {app.company.charAt(0)}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{app.company}</p>
-                    <p className="truncate text-xs text-muted-foreground">{app.role}</p>
+                    <p className="truncate text-sm font-medium">
+                      {app.company}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {app.role}
+                    </p>
                   </div>
 
                   <div className="text-right">
-                    <span className="text-xs font-medium text-primary">{app.status}</span>
-                    <p className="mt-1 text-xs text-muted-foreground">{app.date}</p>
+                    <span className="text-xs font-medium text-primary">
+                      {app.status}
+                    </span>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {app.date}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -158,7 +195,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="border-t border-border px-6 py-20 lg:px-10">
+      <section
+        id="features"
+        className="border-t border-border px-6 py-20 lg:px-10"
+      >
         <div className="mx-auto max-w-7xl">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
             Built for your next move
@@ -167,7 +207,8 @@ export default function Home() {
             Less juggling. More progress.
           </h2>
           <p className="mt-4 max-w-xl leading-7 text-muted-foreground">
-            The tools you need to stay organized and move through your job search with confidence.
+            The tools you need to stay organized and move through your job
+            search with confidence.
           </p>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -193,7 +234,8 @@ export default function Home() {
               Your next move starts here.
             </h2>
             <p className="mt-3 max-w-xl leading-7 text-muted-foreground">
-              Bring your applications, resumes, and interviews into one organized workspace.
+              Bring your applications, resumes, and interviews into one
+              organized workspace.
             </p>
           </div>
           <Link href="/register" className={button}>
@@ -207,7 +249,9 @@ export default function Home() {
           <Link href="/" className="font-semibold text-foreground">
             CareerPilot.
           </Link>
-          <p>© {new Date().getFullYear()} CareerPilot. Built for your next move.</p>
+          <p>
+            © {new Date().getFullYear()} CareerPilot. Built for your next move.
+          </p>
         </div>
       </footer>
     </main>
