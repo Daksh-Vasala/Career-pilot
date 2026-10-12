@@ -6,6 +6,7 @@ import jobRoutes from "../features/job/job.routes.ts";
 import applicationRoutes from "../features/application/application.routes.ts";
 import aiRoutes from "../features/ai/ai.routes.ts";
 import interviewRoutes from "../features/interview/interview.routes.ts";
+import dashboardRoutes from "../features/dashboard/dashboard.routes.ts";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/jobs", jobRoutes);
 router.use("/applications", applicationRoutes);
 router.use("/ai", aiRoutes);
 router.use("/interviews", interviewRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 export default router;
