@@ -17,8 +17,9 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-import { registerUser } from "@/features/auth/auth.service";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/features/auth/auth-context";
+import axios from "axios";
 
 export default function RegisterPage() {
   type RegisterFormValues = z.infer<typeof registerInput>;
@@ -32,10 +33,11 @@ export default function RegisterPage() {
   });
 
   const router = useRouter();
+  const { register: registerAccount } = useAuth();
 
   const submitHandler = async (data: RegisterFormValues) => {
     try {
-      const res = await registerUser({
+      const res = await registerAccount({
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -46,7 +48,13 @@ export default function RegisterPage() {
       router.replace("/dashboard");
     } catch (error) {
       console.log("Error in registering user: ", error);
-      toast.error("Something went wrong");
+      const message =
+        axios.isAxiosError<{ message?: unknown }>(error) &&
+        typeof error.response?.data?.message === "string"
+          ? error.response.data.message
+          : "Something went wrong";
+
+      toast.error(message);
     }
   };
 

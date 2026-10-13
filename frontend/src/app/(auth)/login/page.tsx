@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
@@ -16,11 +17,12 @@ import { loginInput } from "@/features/auth/auth.validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import PasswordInput from "@/features/auth/components/password-input";
-import { loginUser } from "@/features/auth/auth.service";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/features/auth/auth-context";
 
 type LoginFormValues = z.infer<typeof loginInput>;
+
 export default function LoginPage() {
   const {
     register,
@@ -31,19 +33,26 @@ export default function LoginPage() {
     mode: "onBlur",
   });
 
-  const router = useRouter()
+  const router = useRouter();
+  const { login } = useAuth();
 
   const submitHandler = async (data: LoginFormValues) => {
     try {
-      const res = await loginUser({
+      const res = await login({
         email: data.email,
         password: data.password,
       });
+
       toast.success(res.message || "User logged in");
-      router.replace("/dashboard")
+      router.replace("/dashboard");
     } catch (error) {
-      console.log("Error in logging user: ", error);
-      toast.error("Something went wrong");
+      const message =
+        axios.isAxiosError<{ message?: unknown }>(error) &&
+        typeof error.response?.data?.message === "string"
+          ? error.response.data.message
+          : "Something went wrong";
+
+      toast.error(message);
     }
   };
 

@@ -7,14 +7,23 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getUser } from "@/features/auth/auth.service";
+import {
+  getUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+  type LoginPayload,
+  type RegisterPayload,
+} from "@/features/auth/auth.service";
 import type { AuthUser } from "@/features/auth/auth.types";
 
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
-  setUser: (user: AuthUser | null) => void;
+  login: (payload: LoginPayload) => Promise<{ message: string }>;
+  register: (payload: RegisterPayload) => Promise<{ message: string }>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,13 +43,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function login(payload: LoginPayload) {
+    const response = await loginUser(payload);
+    setUser(response.data);
+    setIsLoading(false);
+    return response;
+  }
+
+  async function register(payload: RegisterPayload) {
+    const response = await registerUser(payload);
+    setUser(response.data);
+    setIsLoading(false);
+    return response;
+  }
+
+  async function logout() {
+    await logoutUser();
+    setUser(null);
+  }
+
   useEffect(() => {
     void refreshUser();
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, refreshUser, setUser }}>
+      value={{ user, isLoading, refreshUser, login, register, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

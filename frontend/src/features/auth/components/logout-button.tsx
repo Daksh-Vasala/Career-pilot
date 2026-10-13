@@ -3,21 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { logoutUser } from "@/features/auth/auth.service";
 import { useAuth } from "../auth-context";
 
 export function LogoutButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { setUser } = useAuth();
+  const { logout } = useAuth();
 
   async function handleLogout() {
     try {
       setIsLoading(true);
-      await logoutUser();
+      await logout();
 
       toast.success("Logged out successfully");
-      setUser(null);
       router.replace("/login");
       router.refresh();
     } catch {

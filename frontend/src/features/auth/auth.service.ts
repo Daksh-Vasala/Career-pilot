@@ -1,4 +1,11 @@
 import { api } from "@/lib/api-client";
+import type { AuthUser } from "./auth.types";
+
+interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: AuthUser;
+}
 
 export interface RegisterPayload {
   firstName: string;
@@ -13,21 +20,21 @@ export interface LoginPayload {
 }
 
 export const registerUser = async (data: RegisterPayload) => {
-  const res = await api.post("/auth/register", data);
+  const res = await api.post<AuthResponse>("/auth/register", data);
 
   return res.data;
 };
 
 export const loginUser = async (data: LoginPayload) => {
-  const res = await api.post("/auth/login", data);
+  const res = await api.post<AuthResponse>("/auth/login", data);
 
   return res.data;
 };
 
 export const getUser = async () => {
-  const res = await api.get("/auth/me");
+  const res = await api.get<AuthResponse>("/auth/me");
 
-  return res.data;
+  return res.data.data;
 };
 
 export const logoutUser = async () => {

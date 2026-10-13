@@ -250,7 +250,7 @@ export default function Home() {
             CareerPilot.
           </Link>
           <p>
-            © {new Date().getFullYear()} CareerPilot. Built for your next move.
+            © 2026 CareerPilot. Built for your next move.
           </p>
         </div>
       </footer>
