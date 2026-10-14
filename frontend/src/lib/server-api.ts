@@ -8,6 +8,10 @@ import type {
 } from "@/features/applications/application.types";
 import type { Job, JobsResponse } from "@/features/jobs/job.types";
 import type { Resume, ResumesResponse } from "@/features/resumes/resume.types";
+import {
+  Interview,
+  InterviewsResponse,
+} from "@/features/interviews/interview.types";
 
 interface CollectionResponse<T> {
   success: boolean;
@@ -132,13 +136,10 @@ export async function getApplicationsPageDataServer() {
   };
 
   const [applicationsRes, jobsRes] = await Promise.all([
-    axios.get<ApplicationsResponse>(
-      `${baseUrl}/applications`,
-      {
-        headers,
-        timeout: 10000,
-      },
-    ),
+    axios.get<ApplicationsResponse>(`${baseUrl}/applications`, {
+      headers,
+      timeout: 10000,
+    }),
     axios.get<JobsResponse>(`${baseUrl}/jobs`, {
       headers,
       timeout: 10000,
@@ -150,7 +151,6 @@ export async function getApplicationsPageDataServer() {
     jobs: jobsRes.data.data,
   };
 }
-
 
 export async function getJobsPageDataServer() {
   const cookieStore = await cookies();
@@ -181,7 +181,6 @@ export async function getJobsPageDataServer() {
     applications: applicationsResponse.data.data,
   };
 }
-
 
 export async function getApplicationDetailsServer(id: string) {
   const cookieStore = await cookies();
@@ -215,4 +214,37 @@ export async function getApplicationDetailsServer(id: string) {
   }
 
   return { application, job };
+}
+
+export async function getInterviewsServer(): Promise<Interview[]> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const response = await axios.get<InterviewsResponse>(
+    `${baseUrl}/interviews`,
+    {
+      headers: {
+        Cookie: `token=${token}`,
+      },
+      timeout: 10000,
+    },
+  );
+
+  return response.data.data;
+}
+
+export async function getInterviewsPageDataServer() {
+  const [interviews, applications, jobs] = await Promise.all([
+    getInterviewsServer(),
+    getRecentApplicationsServer(),
+    getJobsServer(),
+  ]);
+
+  return { interviews, applications, jobs };
 }

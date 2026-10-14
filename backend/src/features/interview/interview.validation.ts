@@ -42,6 +42,7 @@ export const updateInterviewSchema = z
         "GROUP_DISCUSSION",
         "OTHER",
       ])
+      .nullable()
       .optional(),
 
     scheduledAt: z.iso.datetime().nullable().optional(),

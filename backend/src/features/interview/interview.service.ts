@@ -115,9 +115,29 @@ export const updateInterviewService = async (
 
 export const getInterviewsService = async (userId: string) => {
   return await db
-    .select()
+    .select({
+      id: interviews.id,
+      userId: interviews.userId,
+      applicationId: interviews.applicationId,
+      scheduledAt: interviews.scheduledAt,
+      interviewType: interviews.interviewType,
+      status: interviews.status,
+      interviewerName: interviews.interviewerName,
+      meetingLink: interviews.meetingLink,
+      notes: interviews.notes,
+      feedback: interviews.feedback,
+      createdAt: interviews.createdAt,
+      updatedAt: interviews.updatedAt,
+    })
     .from(interviews)
-    .where(eq(interviews.userId, userId))
+    .innerJoin(applications, eq(interviews.applicationId, applications.id))
+    .where(
+      and(
+        eq(interviews.userId, userId),
+        eq(applications.userId, userId),
+        eq(applications.status, "INTERVIEW"),
+      ),
+    )
     .orderBy(
       sql`CASE WHEN ${interviews.scheduledAt} IS NULL THEN 1 ELSE 0 END`,
       asc(interviews.scheduledAt),
