@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/features/auth/auth-context";
+import { DashboardShell } from "@/features/dashboard/components/dashboard-shell";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -21,5 +22,5 @@ export default function Protectedlayout({
   if (isLoading || !user) {
     return null;
   }
-  return <>{children}</>;
+  return <DashboardShell>{children}</DashboardShell>;
 }

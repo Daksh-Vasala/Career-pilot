@@ -50,7 +50,9 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       throw new ApiError(401, "No user id");
     }
 
+    const start = performance.now();
     const user = await getMeService(userId);
+    console.log(`getMeService: ${(performance.now() - start).toFixed(1)} ms`);
 
     if (!user) {
       throw new ApiError(404, "User not found");

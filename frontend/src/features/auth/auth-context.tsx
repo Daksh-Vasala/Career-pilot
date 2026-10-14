@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useState,
+  useRef,
   type ReactNode,
 } from "react";
 import {
@@ -31,7 +32,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const hasInitialized = useRef(false);
 
+  
   async function refreshUser() {
     try {
       const currentUser = await getUser();
@@ -56,13 +59,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
     return response;
   }
-
+  
   async function logout() {
     await logoutUser();
     setUser(null);
   }
-
   useEffect(() => {
+    if (hasInitialized.current) return;
+
+    hasInitialized.current = true;
     void refreshUser();
   }, []);
 

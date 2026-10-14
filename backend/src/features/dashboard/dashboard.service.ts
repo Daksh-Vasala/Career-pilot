@@ -15,16 +15,71 @@ const applicationStatuses = [
 ] as const;
 
 export const getDashboardSummaryService = async (userId: string) => {
-  const applicationsCount = await db
-    .select({
-      status: applications.status,
-      count: count(),
-    })
-    .from(applications)
-    .where(eq(applications.userId, userId))
-    .groupBy(applications.status);
+  const currentTime = new Date();
 
-  const applicationByStatus = Object.fromEntries(
+  const [
+    applicationsCount,
+    [totalInterviews],
+    [upcomingInterviews],
+    [nextInterview],
+    [resumeCount],
+    [resumeAnalysesCount],
+  ] = await Promise.all([
+    db
+      .select({
+        status: applications.status,
+        count: count(),
+      })
+      .from(applications)
+      .where(eq(applications.userId, userId))
+      .groupBy(applications.status),
+
+    db
+      .select({ total: count() })
+      .from(interviews)
+      .where(eq(interviews.userId, userId)),
+
+    db
+      .select({ total: count() })
+      .from(interviews)
+      .where(
+        and(
+          eq(interviews.userId, userId),
+          eq(interviews.status, "SCHEDULED"),
+          gt(interviews.scheduledAt, currentTime),
+        ),
+      ),
+
+    db
+      .select({
+        id: interviews.id,
+        scheduledAt: interviews.scheduledAt,
+        interviewType: interviews.interviewType,
+        interviewerName: interviews.interviewerName,
+      })
+      .from(interviews)
+      .where(
+        and(
+          eq(interviews.status, "SCHEDULED"),
+          eq(interviews.userId, userId),
+          gt(interviews.scheduledAt, currentTime),
+        ),
+      )
+      .orderBy(asc(interviews.scheduledAt))
+      .limit(1),
+
+    db
+      .select({ total: count() })
+      .from(resumes)
+      .where(eq(resumes.userId, userId)),
+
+    db
+      .select({ total: count() })
+      .from(resumeAnalyses)
+      .where(eq(resumeAnalyses.userId, userId)),
+  ]);
+
+  const byStatus = Object.fromEntries(
     applicationStatuses.map((status) => [
       status,
       Number(
@@ -34,72 +89,24 @@ export const getDashboardSummaryService = async (userId: string) => {
   );
 
   const totalApplication = applicationsCount.reduce(
-    (acc, item) => item.count + acc,
+    (total, item) => total + Number(item.count),
     0,
   );
 
-  const [totalInterviews] = await db
-    .select({
-      total: count(),
-    })
-    .from(interviews)
-    .where(eq(interviews.userId, userId));
-
-  const currentTime = new Date();
-  const [upcomingInterviews] = await db
-    .select({
-      total: count(),
-    })
-    .from(interviews)
-    .where(
-      and(
-        eq(interviews.userId, userId),
-        eq(interviews.status, "SCHEDULED"),
-        gt(interviews.scheduledAt, currentTime),
-      ),
-    );
-
-  const [nextInterview] = await db
-    .select({
-      id: interviews.id,
-      scheduledAt: interviews.scheduledAt,
-      interviewType: interviews.interviewType,
-      interviewerName: interviews.interviewerName,
-    })
-    .from(interviews)
-    .where(
-      and(
-        eq(interviews.status, "SCHEDULED"),
-        eq(interviews.userId, userId),
-        gt(interviews.scheduledAt, currentTime),
-      ),
-    )
-    .orderBy(asc(interviews.scheduledAt))
-    .limit(1);
-
-  const [resumeCount] = await db
-    .select({ total: count() })
-    .from(resumes)
-    .where(eq(resumes.userId, userId));
-
-  const [resumeAnalysesCount] = await db
-    .select({ total: count() })
-    .from(resumeAnalyses)
-    .where(eq(resumeAnalyses.userId, userId));
   return {
     resumes: {
-      total: resumeCount.total,
+      total: Number(resumeCount.total),
     },
     resumeAnalyses: {
-      total: resumeAnalysesCount.total,
+      total: Number(resumeAnalysesCount.total),
     },
     applications: {
       total: totalApplication,
-      byStatus: applicationByStatus,
+      byStatus,
     },
     interviews: {
-      total: totalInterviews.total,
-      upcoming: upcomingInterviews.total,
+      total: Number(totalInterviews.total),
+      upcoming: Number(upcomingInterviews.total),
       nextInterview: nextInterview ?? null,
     },
   };

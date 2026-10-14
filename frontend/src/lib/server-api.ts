@@ -1,0 +1,183 @@
+import "server-only";
+import axios from "axios";
+import { cookies } from "next/headers";
+import type { DashboardSummaryResponse } from "@/features/dashboard/dashboard.types";
+import type {
+  Application,
+  ApplicationsResponse,
+} from "@/features/applications/application.types";
+import type { Job, JobsResponse } from "@/features/jobs/job.types";
+import type { Resume, ResumesResponse } from "@/features/resumes/resume.types";
+
+interface CollectionResponse<T> {
+  success: boolean;
+  message: string;
+  data: T[];
+}
+
+export async function getDashboardSummaryServer() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const response = await axios.get<DashboardSummaryResponse>(
+    `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary`,
+    {
+      headers: {
+        Cookie: `token=${token}`,
+      },
+      timeout: 10000,
+    },
+  );
+
+  return response.data.data;
+}
+
+export async function getRecentApplicationsServer() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const headers = {
+    Cookie: `token=${token}`,
+  };
+
+  const [applicationsResponse, jobsResponse] = await Promise.all([
+    axios.get<CollectionResponse<Application>>(
+      `${process.env.NEXT_PUBLIC_API_URL}/applications`,
+      { headers, timeout: 10000 },
+    ),
+    axios.get<CollectionResponse<Job>>(
+      `${process.env.NEXT_PUBLIC_API_URL}/jobs`,
+      { headers, timeout: 10000 },
+    ),
+  ]);
+
+  const applications = applicationsResponse.data.data
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    )
+    .slice(0, 5);
+
+  const jobs = jobsResponse.data.data;
+
+  const jobsById = new Map(jobs.map((job) => [job.id, job]));
+
+  return applications.map((application) => ({
+    ...application,
+    job: jobsById.get(application.jobId),
+  }));
+}
+
+export async function getResumesServer(): Promise<Resume[]> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const response = await axios.get<ResumesResponse>(
+    `${process.env.NEXT_PUBLIC_API_URL}/resumes`,
+    {
+      headers: {
+        Cookie: `token=${token}`,
+      },
+      timeout: 10000,
+    },
+  );
+
+  return response.data.data;
+}
+
+export async function getJobsServer(): Promise<Job[]> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const response = await axios.get<JobsResponse>(
+    `${process.env.NEXT_PUBLIC_API_URL}/jobs`,
+    {
+      headers: {
+        Cookie: `token=${token}`,
+      },
+      timeout: 10000,
+    },
+  );
+
+  return response.data.data;
+}
+
+export async function getApplicationsPageDataServer() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const headers = {
+    Cookie: `token=${token}`,
+  };
+
+  const [applicationsRes, jobsRes] = await Promise.all([
+    axios.get<ApplicationsResponse>(
+      `${baseUrl}/applications`,
+      {
+        headers,
+        timeout: 10000,
+      },
+    ),
+    axios.get<JobsResponse>(`${baseUrl}/jobs`, {
+      headers,
+      timeout: 10000,
+    }),
+  ]);
+
+  return {
+    applications: applicationsRes.data.data,
+    jobs: jobsRes.data.data,
+  };
+}
+
+
+export async function getJobsPageDataServer() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const headers = {
+    Cookie: `token=${token}`,
+  };
+
+  const [jobsResponse, applicationsResponse] = await Promise.all([
+    axios.get<JobsResponse>(`${baseUrl}/jobs`, {
+      headers,
+      timeout: 10000,
+    }),
+    axios.get<ApplicationsResponse>(`${baseUrl}/applications`, {
+      headers,
+      timeout: 10000,
+    }),
+  ]);
+
+  return {
+    jobs: jobsResponse.data.data,
+    applications: applicationsResponse.data.data,
+  };
+}
