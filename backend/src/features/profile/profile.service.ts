@@ -76,14 +76,16 @@ export const updateProfileService = async (
     (firstName === undefined || firstName === user.firstName) &&
     (lastName === undefined || lastName === user.lastName) &&
     (phoneNumber === undefined ||
-      phoneNumber === existingProfile?.phoneNumber) &&
+      phoneNumber === (existingProfile?.phoneNumber ?? null)) &&
     (linkedinUrl === undefined ||
-      linkedinUrl === existingProfile?.linkedinUrl) &&
-    (githubUrl === undefined || githubUrl === existingProfile?.githubUrl) &&
-    (location === undefined || location === existingProfile?.location) &&
+      linkedinUrl === (existingProfile?.linkedinUrl ?? null)) &&
+    (githubUrl === undefined ||
+      githubUrl === (existingProfile?.githubUrl ?? null)) &&
     (portfolioUrl === undefined ||
-      portfolioUrl === existingProfile?.portfolioUrl) &&
-    (bio === undefined || bio === existingProfile?.bio);
+      portfolioUrl === (existingProfile?.portfolioUrl ?? null)) &&
+    (location === undefined ||
+      location === (existingProfile?.location ?? null)) &&
+    (bio === undefined || bio === (existingProfile?.bio ?? null));
 
   if (noChanges) {
     throw new ApiError(400, "No fields to update");
@@ -121,14 +123,19 @@ export const updateProfileService = async (
           ...(portfolioUrl !== undefined && { portfolioUrl }),
           ...(location !== undefined && { location }),
           ...(bio !== undefined && { bio }),
+          updatedAt: new Date(),
         })
-        .where(eq(profiles.userId, userId))
-        .returning(profileColumns);
+        .where(eq(profiles.userId, userId));
     } else {
-      await db
-        .insert(profiles)
-        .values({ ...profileData, userId })
-        .returning(profileColumns);
+      await tx.insert(profiles).values({
+        userId,
+        phoneNumber: phoneNumber ?? null,
+        linkedinUrl: linkedinUrl ?? null,
+        githubUrl: githubUrl ?? null,
+        portfolioUrl: portfolioUrl ?? null,
+        location: location ?? null,
+        bio: bio ?? null,
+      });
     }
   });
 

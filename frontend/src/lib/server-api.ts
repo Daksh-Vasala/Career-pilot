@@ -12,6 +12,7 @@ import {
   Interview,
   InterviewsResponse,
 } from "@/features/interviews/interview.types";
+import { ProfileResponse, UserProfile } from "@/features/profile/profile.types";
 
 interface CollectionResponse<T> {
   success: boolean;
@@ -247,4 +248,28 @@ export async function getInterviewsPageDataServer() {
   ]);
 
   return { interviews, applications, jobs };
+}
+
+
+export async function getProfileServer(): Promise<UserProfile> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const response = await axios.get<ProfileResponse>(
+    `${baseUrl}/profiles`,
+    {
+      headers: {
+        Cookie: `token=${token}`,
+      },
+      timeout: 10000,
+    },
+  );
+
+  return response.data.data;
 }

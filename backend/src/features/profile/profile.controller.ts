@@ -27,7 +27,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
 
   return res.status(200).json({
     success: true,
-    message: "Profile data fetched successfully",
+    message: "Profile updated successfully",
     data: updatedProfile,
   });
 };

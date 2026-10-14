@@ -25,6 +25,7 @@ const navigation = [
   { label: "Job Tracker", href: "/jobs", icon: BriefcaseBusiness },
   { label: "Applications", href: "/applications", icon: ClipboardList },
   { label: "Interviews", href: "/interviews", icon: CalendarDays },
+  { label: "Profile", href: "/profile", icon: UserRound },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
