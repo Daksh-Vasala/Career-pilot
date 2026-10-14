@@ -171,7 +171,7 @@ export default function ResumeAnalysisPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+      <section className="surface-raised p-5 sm:p-6">
         <label htmlFor="resume" className="mb-2 block text-sm font-medium">
           Select a resume
         </label>
@@ -182,7 +182,7 @@ export default function ResumeAnalysisPage() {
             value={selectedResumeId}
             onChange={(event) => setSelectedResumeId(event.target.value)}
             disabled={loadingResumes || resumes.length === 0 || generating}
-            className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            className="surface-inset min-w-0 flex-1 px-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             <option value="">
               {loadingResumes ? "Loading resumes..." : "Choose a resume"}
@@ -204,7 +204,7 @@ export default function ResumeAnalysisPage() {
               loadingAnalysis ||
               generating
             }
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="button-primary inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
           >
             {generating ? (
               <RefreshCw size={17} className="animate-spin" />
@@ -229,7 +229,7 @@ export default function ResumeAnalysisPage() {
       </section>
 
       {error && (
-        <div className="rounded-xl border border-border bg-card p-6 text-center">
+        <div className="surface-raised p-6 text-center">
           <p className="text-sm text-muted-foreground">
             Couldn't load your resumes.
           </p>
@@ -251,7 +251,7 @@ export default function ResumeAnalysisPage() {
 
       {!loadingAnalysis && analysis && (
         <>
-          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-7">
+          <section className="surface-raised p-5 sm:p-7">
             <div className="flex items-center gap-2">
               <Sparkles size={20} className="text-primary" />
               <h2 className="text-lg font-semibold">Resume summary</h2>
@@ -271,7 +271,7 @@ export default function ResumeAnalysisPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-7">
+          <section className="surface-raised p-5 sm:p-7">
             <div className="flex items-center gap-2">
               <FileText size={20} className="text-primary" />
               <h2 className="text-lg font-semibold">Skills found</h2>
@@ -296,7 +296,7 @@ export default function ResumeAnalysisPage() {
               return (
                 <section
                   key={section.title}
-                  className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+                  className="surface-raised p-5"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">

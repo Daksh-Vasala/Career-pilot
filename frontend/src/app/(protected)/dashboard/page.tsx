@@ -33,10 +33,10 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-[#202D30] dark:text-[#E7ECE8]">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           Overview
         </h1>
-        <p className="mt-2 text-[#617074] dark:text-[#9BAAA3]">
+        <p className="mt-2 text-muted-foreground">
           Your career journey, all in one place.
         </p>
       </div>

@@ -26,11 +26,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       >
         <header
           className="sticky top-0 z-30 flex h-16 items-center justify-between
-          border-b border-[#DADDD7]/70 bg-[#F0F0EC]/90 px-4
-          shadow-[0_3px_12px_rgba(32,45,48,0.025)] backdrop-blur-xl
-          dark:border-[#34413C]/70 dark:bg-[#171D1C]/90
-          dark:shadow-[0_3px_12px_rgba(0,0,0,0.08)]
-          sm:px-6"
+          border-b border-border bg-background/95 px-4
+          shadow-sm backdrop-blur-sm sm:px-6"
         >
           <div className="flex min-w-0 items-center gap-3">
             {/* Mobile drawer */}
@@ -40,11 +37,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               aria-controls="careerpilot-sidebar"
               aria-expanded={sidebarOpen}
               onClick={() => setSidebarOpen(true)}
-              className="rounded-xl p-2 text-[#285B57] transition-colors
-                hover:bg-white/70 focus-visible:outline-none
-                focus-visible:ring-2 focus-visible:ring-[#285B57]
-                dark:text-[#83B5A7] dark:hover:bg-white/5
-                md:hidden"
+              className="rounded-xl p-2 text-primary transition-colors
+                hover:bg-muted focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-ring md:hidden"
             >
               <Menu size={21} />
             </button>
@@ -56,12 +51,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               aria-controls="careerpilot-sidebar"
               aria-expanded={!collapsed}
               onClick={() => setCollapsed((value) => !value)}
-              className="hidden rounded-xl p-2 text-[#617074]
-                transition-colors hover:bg-white/70
-                focus-visible:outline-none focus-visible:ring-2
-                focus-visible:ring-[#285B57]
-                dark:text-[#B1BDB6] dark:hover:bg-white/5
-                md:inline-flex"
+              className="hidden rounded-xl p-2 text-muted-foreground
+                transition-colors hover:bg-muted focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-ring md:inline-flex"
             >
               {collapsed ? (
                 <PanelLeftOpen size={20} />
@@ -70,7 +62,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               )}
             </button>
 
-            <span className="truncate text-sm font-medium text-[#617074] dark:text-[#B1BDB6]">
+            <span className="truncate text-sm font-medium text-muted-foreground">
               Your workspace
             </span>
           </div>

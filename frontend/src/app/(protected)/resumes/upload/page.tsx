@@ -88,7 +88,7 @@ export default function ResumeUploadPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-6 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8"
+        className="surface-raised space-y-6 p-5 sm:p-8"
       >
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
@@ -103,7 +103,7 @@ export default function ResumeUploadPage() {
             placeholder="e.g. Full Stack Developer Resume"
             maxLength={100}
             required
-            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-primary/40"
+            className="surface-inset w-full px-4 py-3 text-sm outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-primary/40"
           />
 
           <p className="text-xs text-muted-foreground">
@@ -130,7 +130,7 @@ export default function ResumeUploadPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex min-h-48 w-full flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 p-6 text-center transition-colors hover:bg-muted/50"
+              className="surface-inset flex min-h-48 w-full flex-col items-center justify-center border-dashed p-6 text-center transition-colors hover:bg-muted/50"
             >
               <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Upload size={24} />
@@ -145,7 +145,7 @@ export default function ResumeUploadPage() {
               </span>
             </button>
           ) : (
-            <div className="flex items-center gap-3 rounded-xl border border-border p-4">
+            <div className="surface-raised flex items-center gap-3 p-4">
               <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <FileText size={22} />
               </div>
@@ -180,7 +180,7 @@ export default function ResumeUploadPage() {
           <button
             type="submit"
             disabled={uploading}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="button-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Upload size={17} />
             {uploading ? "Uploading..." : "Upload Resume"}

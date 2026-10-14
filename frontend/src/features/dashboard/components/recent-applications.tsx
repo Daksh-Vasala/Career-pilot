@@ -35,16 +35,14 @@ export async function RecentApplications({
 }: RecentApplicationsProps) {
   return (
     <section
-      className="rounded-2xl border border-[#DADDD7]/80 bg-[#F0F0EC] p-6
-        shadow-[5px_5px_12px_rgba(32,45,48,0.04),-5px_-5px_12px_rgba(255,255,255,0.6)]
-        dark:border-[#34413C] dark:bg-[#1D2624] dark:shadow-none"
+      className="surface-raised p-6"
     >
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-[#202D30] dark:text-[#E7ECE8]">
+          <h2 className="text-lg font-semibold text-card-foreground">
             Recent applications
           </h2>
-          <p className="mt-1 text-sm text-[#617074] dark:text-[#9BAAA3]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Keep track of your latest opportunities.
           </p>
         </div>
@@ -52,7 +50,7 @@ export async function RecentApplications({
         <Link
           href="/applications"
           className="inline-flex shrink-0 items-center gap-1 text-sm font-medium
-            text-[#285B57] hover:underline dark:text-[#A9D4C5]"
+          text-primary hover:underline"
         >
           View all <ArrowRight size={16} />
         </Link>
@@ -60,24 +58,22 @@ export async function RecentApplications({
 
       {applications.length === 0 ? (
         <div className="mt-8 py-6 text-center">
-          <BriefcaseBusiness size={28} className="mx-auto text-[#87918C]" />
-          <p className="mt-3 font-medium text-[#202D30] dark:text-[#E7ECE8]">
+          <BriefcaseBusiness size={28} className="mx-auto text-muted-foreground" />
+          <p className="mt-3 font-medium text-card-foreground">
             No applications yet
           </p>
-          <p className="mt-1 text-sm text-[#617074] dark:text-[#9BAAA3]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Start tracking applications to see them here.
           </p>
           <Link
             href="/jobs"
-            className="mt-4 inline-flex rounded-xl bg-[#285B57] px-4 py-2
-              text-sm font-medium text-white hover:opacity-90
-              dark:bg-[#83B5A7] dark:text-[#171D1C]"
+            className="button-primary mt-4 inline-flex px-4 py-2 text-sm font-medium"
           >
             Explore tracked jobs
           </Link>
         </div>
       ) : (
-        <div className="mt-6 divide-y divide-[#DADDD7] dark:divide-[#34413C]">
+        <div className="mt-6 divide-y divide-border">
           {applications.map((application) => (
             <div
               key={application.id}
@@ -86,22 +82,22 @@ export async function RecentApplications({
               <div className="flex min-w-0 items-center gap-3">
                 <div
                   className="flex size-10 shrink-0 items-center justify-center rounded-xl
-                    bg-[#DCE8DF] text-[#285B57] dark:bg-[#2B4038] dark:text-[#A9D4C5]"
+                    bg-accent text-accent-foreground"
                 >
                   <BriefcaseBusiness size={18} />
                 </div>
 
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-[#202D30] dark:text-[#E7ECE8]">
+                  <p className="truncate text-sm font-semibold text-card-foreground">
                     {application.job?.jobTitle ?? "Job details unavailable"}
                   </p>
-                  <p className="mt-0.5 truncate text-sm text-[#617074] dark:text-[#9BAAA3]">
+                  <p className="mt-0.5 truncate text-sm text-muted-foreground">
                     {application.job?.companyName ?? "Unknown company"}
                     {application.job?.location
                       ? ` · ${application.job.location}`
                       : ""}
                   </p>
-                  <p className="mt-1 text-xs text-[#87918C]">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {application.appliedAt
                       ? `Applied ${formatDate(application.appliedAt)}`
                       : `Added ${formatDate(application.createdAt)}`}

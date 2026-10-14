@@ -18,16 +18,14 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
 import {
   getJobs,
   createJob,
   updateJob,
   deleteJob,
 } from "@/features/jobs/job.service";
-import type {
-  CreateJobData,
-  UpdateJobData,
-} from "@/features/jobs/job.service";
+import type { CreateJobData, UpdateJobData } from "@/features/jobs/job.service";
 import type { Job } from "@/features/jobs/job.types";
 import { createApplication } from "@/features/applications/application.service";
 import type {
@@ -109,6 +107,10 @@ export function JobsClient({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [form, setForm] = useState<JobFormData>(emptyForm);
+  const [confirmation, setConfirmation] = useState<{
+    type: "apply" | "delete";
+    job: Job;
+  } | null>(null);
 
   const applicationsByJobId = new Map(
     applications.map((application) => [application.jobId, application]),
@@ -184,9 +186,7 @@ export function JobsClient({
         const updatedJob = await updateJob(editingJob.id, data);
 
         setJobs((current) =>
-          current.map((job) =>
-            job.id === updatedJob.id ? updatedJob : job,
-          ),
+          current.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
         );
 
         toast.success("Job updated successfully.");
@@ -215,25 +215,21 @@ export function JobsClient({
       setEditingJob(null);
       setForm(emptyForm);
     } catch {
-      toast.error(
-        editingJob ? "Failed to update job." : "Failed to add job.",
-      );
+      toast.error(editingJob ? "Failed to update job." : "Failed to add job.");
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleMarkAsApplied(job: Job) {
+  function handleMarkAsApplied(job: Job) {
     if (applicationsByJobId.has(job.id) || applyingId !== null) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Have you submitted your application for ${job.jobTitle} at ${job.companyName}?`,
-    );
+    setConfirmation({ type: "apply", job });
+  }
 
-    if (!confirmed) return;
-
+  async function confirmMarkAsApplied(job: Job) {
     setApplyingId(job.id);
 
     try {
@@ -251,6 +247,7 @@ export function JobsClient({
       });
 
       toast.success("Application added successfully.");
+      setConfirmation(null);
       router.refresh();
     } catch {
       toast.error(
@@ -261,13 +258,11 @@ export function JobsClient({
     }
   }
 
-  async function handleDelete(job: Job) {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${job.jobTitle}" at ${job.companyName}? Associated applications and interviews may also be deleted.`,
-    );
+  function handleDelete(job: Job) {
+    setConfirmation({ type: "delete", job });
+  }
 
-    if (!confirmed) return;
-
+  async function confirmDelete(job: Job) {
     setDeletingId(job.id);
 
     try {
@@ -279,6 +274,7 @@ export function JobsClient({
       );
 
       toast.success("Job deleted successfully.");
+      setConfirmation(null);
     } catch {
       toast.error("Failed to delete job.");
     } finally {
@@ -311,14 +307,14 @@ export function JobsClient({
         <button
           type="button"
           onClick={openCreateDialog}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          className="button-primary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium"
         >
           <Plus size={18} />
           Add Job
         </button>
       </header>
 
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+      <section className="surface-raised p-5 sm:p-6">
         <div className="flex items-center gap-4">
           <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <BriefcaseBusiness size={24} />
@@ -347,7 +343,7 @@ export function JobsClient({
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search jobs..."
               aria-label="Search jobs"
-              className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+              className="surface-inset w-full py-2.5 pl-9 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
         </div>
@@ -362,21 +358,21 @@ export function JobsClient({
             ))}
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-border bg-card p-8 text-center">
+          <div className="surface-raised p-8 text-center">
             <p className="text-muted-foreground">
               We couldn&apos;t load your jobs.
             </p>
             <button
               type="button"
               onClick={() => void fetchJobs()}
-              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+              className="button-primary mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium"
             >
               <RefreshCw size={16} />
               Try again
             </button>
           </div>
         ) : filteredJobs.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
+          <div className="surface-raised px-6 py-14 text-center">
             <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <BriefcaseBusiness size={28} />
             </div>
@@ -392,7 +388,7 @@ export function JobsClient({
               <button
                 type="button"
                 onClick={openCreateDialog}
-                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground"
+                className="button-primary mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
               >
                 <Plus size={17} />
                 Add your first job
@@ -408,14 +404,17 @@ export function JobsClient({
               return (
                 <article
                   key={job.id}
-                  className="flex min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                  className="surface-raised surface-raised-hover flex min-w-0 flex-col p-5"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <Building2 size={22} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-semibold" title={job.jobTitle}>
+                      <h3
+                        className="truncate font-semibold"
+                        title={job.jobTitle}
+                      >
                         {job.jobTitle}
                       </h3>
                       <p
@@ -452,7 +451,10 @@ export function JobsClient({
 
                   {application && (
                     <div className="mt-4 flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-2 text-sm">
-                      <CheckCircle2 size={16} className="shrink-0 text-primary" />
+                      <CheckCircle2
+                        size={16}
+                        className="shrink-0 text-primary"
+                      />
                       <span>
                         Application:{" "}
                         <span className="font-medium">
@@ -509,7 +511,7 @@ export function JobsClient({
                         <button
                           type="button"
                           onClick={() => router.push("/applications")}
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                          className="button-primary inline-flex w-full items-center justify-center gap-2 px-3 py-2.5 text-sm font-medium"
                         >
                           <ClipboardList size={16} />
                           View Application
@@ -519,14 +521,16 @@ export function JobsClient({
                           type="button"
                           onClick={() => void handleMarkAsApplied(job)}
                           disabled={applyingId !== null}
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="button-primary inline-flex w-full items-center justify-center gap-2 px-3 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {isApplying ? (
                             <RefreshCw size={16} className="animate-spin" />
                           ) : (
                             <CheckCircle2 size={16} />
                           )}
-                          {isApplying ? "Creating application..." : "Mark as Applied"}
+                          {isApplying
+                            ? "Creating application..."
+                            : "Mark as Applied"}
                         </button>
                       )}
                     </div>
@@ -537,6 +541,37 @@ export function JobsClient({
           </div>
         )}
       </section>
+
+      <ConfirmationDialog
+        open={confirmation !== null}
+        onOpenChange={(open) => {
+          if (!open && applyingId === null && deletingId === null) {
+            setConfirmation(null);
+          }
+        }}
+        title={
+          confirmation?.type === "apply" ? "Mark as applied?" : "Delete job?"
+        }
+        description={
+          confirmation?.type === "apply"
+            ? `Have you submitted your application for ${confirmation.job.jobTitle} at ${confirmation.job.companyName}?`
+            : confirmation
+              ? `Are you sure you want to delete "${confirmation.job.jobTitle}" at ${confirmation.job.companyName}? Associated applications and interviews may also be deleted.`
+              : ""
+        }
+        confirmLabel={
+          confirmation?.type === "apply" ? "Mark as applied" : "Delete job"
+        }
+        variant={confirmation?.type === "apply" ? "default" : "destructive"}
+        onConfirm={() => {
+          if (confirmation?.type === "apply") {
+            void confirmMarkAsApplied(confirmation.job);
+          } else if (confirmation) {
+            void confirmDelete(confirmation.job);
+          }
+        }}
+        isPending={applyingId !== null || deletingId !== null}
+      />
 
       {dialogOpen && (
         <div
@@ -549,7 +584,7 @@ export function JobsClient({
             role="dialog"
             aria-modal="true"
             aria-labelledby="job-dialog-title"
-            className="my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-card p-5 shadow-xl sm:p-7"
+            className="surface-modal my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto p-5 sm:p-7"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -588,7 +623,7 @@ export function JobsClient({
                       updateField("companyName", event.target.value)
                     }
                     placeholder="e.g. Google"
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="surface-inset w-full px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
 
@@ -605,7 +640,7 @@ export function JobsClient({
                       updateField("jobTitle", event.target.value)
                     }
                     placeholder="e.g. Backend Developer"
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="surface-inset w-full px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
 
@@ -622,7 +657,7 @@ export function JobsClient({
                       updateField("jobUrl", event.target.value)
                     }
                     placeholder="https://..."
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="surface-inset w-full px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
 
@@ -638,12 +673,15 @@ export function JobsClient({
                       updateField("location", event.target.value)
                     }
                     placeholder="e.g. Ahmedabad / Remote"
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="surface-inset w-full px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="employmentType" className="text-sm font-medium">
+                  <label
+                    htmlFor="employmentType"
+                    className="text-sm font-medium"
+                  >
                     Employment type
                   </label>
                   <select
@@ -652,7 +690,7 @@ export function JobsClient({
                     onChange={(event) =>
                       updateField("employmentType", event.target.value)
                     }
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="surface-inset w-full px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <option value="">Select type</option>
                     <option value="Full-time">Full-time</option>
@@ -675,7 +713,7 @@ export function JobsClient({
                       updateField("salary", event.target.value)
                     }
                     placeholder="e.g. ₹4–6 LPA"
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="surface-inset w-full px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
               </div>
@@ -692,7 +730,7 @@ export function JobsClient({
                     updateField("description", event.target.value)
                   }
                   placeholder="Responsibilities, requirements, or notes..."
-                  className="w-full resize-y rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  className="surface-inset w-full resize-y px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
@@ -708,7 +746,7 @@ export function JobsClient({
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="button-primary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving && <RefreshCw size={16} className="animate-spin" />}
                   {saving

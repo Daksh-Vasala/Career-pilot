@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
 import { getResumes, deleteResume } from "@/features/resumes/resume.service";
 import type { Resume } from "@/features/resumes/resume.types";
 
@@ -41,6 +42,7 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null);
 
   const fetchResumes = useCallback(async () => {
     setLoading(true);
@@ -57,13 +59,9 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
     }
   }, []);
 
-  async function handleDelete(resume: Resume) {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${resume.fileName}"?`,
-    );
-
-    if (!confirmed) return;
-
+  async function handleDelete() {
+    if (!resumeToDelete) return;
+    const resume = resumeToDelete;
     setDeletingId(resume.id);
 
     try {
@@ -72,6 +70,7 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
       setResumes((current) => current.filter((item) => item.id !== resume.id));
 
       toast.success("Resume deleted successfully.");
+      setResumeToDelete(null);
     } catch {
       toast.error("Failed to delete resume.");
     } finally {
@@ -94,7 +93,7 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
         <div className="flex flex-col gap-2 sm:flex-row">
           <Link
             href="/resumes/upload"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            className="button-primary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium"
           >
             <Upload size={18} />
             Upload Resume
@@ -102,7 +101,7 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
 
           <Link
             href="/resumes/analysis"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+            className="surface-raised inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
           >
             <BrainCircuit size={18} />
             AI Analysis
@@ -110,7 +109,7 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+      <section className="surface-raised p-5 sm:p-6">
         <div className="flex items-center gap-4">
           <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <FileText size={24} />
@@ -146,21 +145,21 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
             ))}
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-border bg-card p-8 text-center">
+          <div className="surface-raised p-8 text-center">
             <p className="text-muted-foreground">
               We couldn&apos;t load your resumes.
             </p>
 
             <button
               onClick={() => void fetchResumes()}
-              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+              className="button-primary mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium"
             >
               <RefreshCw size={16} />
               Try again
             </button>
           </div>
         ) : resumes.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
+          <div className="surface-raised px-6 py-14 text-center">
             <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <FileText size={28} />
             </div>
@@ -174,7 +173,7 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
 
             <Link
               href="/resumes/upload"
-              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground"
+              className="button-primary mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
             >
               <Upload size={17} />
               Upload your first resume
@@ -185,7 +184,7 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
             {resumes.map((resume) => (
               <article
                 key={resume.id}
-                className="flex min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                className="surface-raised surface-raised-hover flex min-w-0 flex-col p-5"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -231,14 +230,14 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
                     href={resume.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
+                    className="surface-raised inline-flex flex-1 items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
                   >
                     <ExternalLink size={16} />
                     Open PDF
                   </a>
 
                   <button
-                    onClick={() => void handleDelete(resume)}
+                    onClick={() => setResumeToDelete(resume)}
                     disabled={deletingId === resume.id}
                     aria-label={`Delete ${resume.fileName}`}
                     title="Delete resume"
@@ -256,6 +255,21 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
           </div>
         )}
       </section>
+      <ConfirmationDialog
+        open={resumeToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open && deletingId === null) setResumeToDelete(null);
+        }}
+        title="Delete resume?"
+        description={
+          resumeToDelete
+            ? `Are you sure you want to delete "${resumeToDelete.fileName}"?`
+            : ""
+        }
+        confirmLabel="Delete resume"
+        onConfirm={() => void handleDelete()}
+        isPending={deletingId !== null}
+      />
     </div>
   );
 }

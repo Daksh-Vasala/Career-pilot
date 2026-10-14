@@ -29,7 +29,7 @@ export const updateApplicationSchema = z.object({
       "REJECTED",
       "WITHDRAWN",
     ])
-    .default("APPLIED"),
+    .optional(),
   appliedAt: z.iso.datetime().optional().nullable(),
   notes: z.string().trim().optional().nullable(),
   recruiterName: z.string().trim().max(150).optional().nullable(),

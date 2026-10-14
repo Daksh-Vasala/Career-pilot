@@ -181,3 +181,38 @@ export async function getJobsPageDataServer() {
     applications: applicationsResponse.data.data,
   };
 }
+
+
+export async function getApplicationDetailsServer(id: string) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const config = {
+    headers: { Cookie: `token=${token}` },
+    timeout: 10000,
+  };
+
+  const [applicationResponse, jobsResponse] = await Promise.all([
+    axios.get<{ success: boolean; message: string; data: Application }>(
+      `${baseUrl}/applications/${id}`,
+      config,
+    ),
+    axios.get<JobsResponse>(`${baseUrl}/jobs`, config),
+  ]);
+
+  const application = applicationResponse.data.data;
+  const job = jobsResponse.data.data.find(
+    (item) => item.id === application.jobId,
+  );
+
+  if (!job) {
+    throw new Error("JOB_NOT_FOUND");
+  }
+
+  return { application, job };
+}

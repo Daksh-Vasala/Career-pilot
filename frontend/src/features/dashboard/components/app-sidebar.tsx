@@ -16,8 +16,8 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { Dialog } from "@base-ui/react/dialog";
 import { useAuth } from "@/features/auth/auth-context";
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
 
 const navigation = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -72,7 +72,7 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
         aria-label="Close navigation menu"
         tabIndex={open ? 0 : -1}
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-[#17201D]/35 backdrop-blur-sm
+        className={`fixed inset-0 z-40 bg-foreground/30
           transition-opacity duration-300 md:hidden
           ${open ? "visible opacity-100" : "invisible opacity-0"}`}
       />
@@ -83,12 +83,10 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
         aria-hidden={undefined}
         className={`fixed inset-y-0 left-0 z-50 flex flex-col
           ${collapsed ? "w-68 md:w-18" : "w-68 md:w-68"}
-          border-r border-[#DADDD7]/80 bg-[#F0F0EC] p-3
-          shadow-[8px_0_28px_rgba(32,45,48,0.10),-3px_0_12px_rgba(255,255,255,0.65)]
+          border-r border-border bg-background p-3
+          shadow-sidebar
           transition-[width,transform] duration-300 ease-in-out
           motion-reduce:transition-none
-          dark:border-[#34413C] dark:bg-[#171D1C]
-          dark:shadow-[8px_0_28px_rgba(0,0,0,0.3)]
           ${open ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0`}
       >
@@ -104,7 +102,7 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
             className="min-w-0"
             aria-label="CareerPilot home"
           >
-            <span className="text-lg font-semibold tracking-tight text-[#285B57] dark:text-[#A9D4C5]">
+            <span className="text-lg font-semibold tracking-tight text-primary">
               {collapsed ? "C" : "CareerPilot"}
             </span>
           </Link>
@@ -114,8 +112,7 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
               type="button"
               aria-label="Close navigation"
               onClick={onClose}
-              className="rounded-xl p-2 text-[#617074] hover:bg-black/5
-                dark:text-[#B1BDB6] dark:hover:bg-white/5 md:hidden"
+              className="rounded-xl p-2 text-muted-foreground hover:bg-muted md:hidden"
             >
               <X size={18} />
             </button>
@@ -123,7 +120,7 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
         </div>
 
         {!collapsed && (
-          <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#87918C] dark:text-[#9BAAA3]">
+          <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Workspace
           </p>
         )}
@@ -146,12 +143,12 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
                 className={`flex min-h-11 items-center rounded-xl py-3
                   text-sm font-medium transition-all duration-200
                   focus-visible:outline-none focus-visible:ring-2
-                  focus-visible:ring-[#285B57] dark:focus-visible:ring-[#83B5A7]
+                  focus-visible:ring-ring
                   ${collapsed ? "justify-center px-0" : "gap-3 px-3"}
                   ${
                     isActive
-                      ? "bg-[#E4EAE3] text-[#285B57] shadow-[inset_2px_2px_5px_rgba(40,91,87,0.10),inset_-2px_-2px_5px_rgba(255,255,255,0.75)] dark:bg-[#263631] dark:text-[#A9D4C5] dark:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.18),inset_-1px_-1px_3px_rgba(255,255,255,0.02)]"
-                      : "text-[#617074] hover:bg-white/55 hover:text-[#202D30] dark:text-[#B1BDB6] dark:hover:bg-white/4 dark:hover:text-[#E7ECE8]"
+                      ? "bg-accent text-accent-foreground shadow-inset-surface"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
               >
                 <Icon size={19} strokeWidth={isActive ? 2.1 : 1.7} />
@@ -162,33 +159,29 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
         </nav>
 
         {/* Account menu */}
-        <div className="relative mt-auto border-t border-[#DADDD7]/80 pt-3 dark:border-[#34413C]">
+        <div className="relative mt-auto border-t border-border pt-3">
           {accountOpen && (
             <div
-              className={`absolute bottom-full z-10 mb-3 rounded-2xl
-                border border-white/80 bg-[#F0F0EC]/95 p-2
-                shadow-[6px_6px_18px_rgba(32,45,48,0.10),-4px_-4px_12px_rgba(255,255,255,0.8)]
-                backdrop-blur-xl dark:border-[#34413C]
-                dark:bg-[#1D2624]/95 dark:shadow-[5px_5px_16px_rgba(0,0,0,0.25)]
+              className={`surface-raised absolute bottom-full z-10 mb-3 p-2
                 ${collapsed ? "left-full ml-3 w-52" : "inset-x-0"}`}
             >
               <div className="truncate px-3 py-2">
-                <p className="truncate text-sm font-medium text-[#202D30] dark:text-[#E7ECE8]">
+                <p className="truncate text-sm font-medium text-foreground">
                   {fullName}
                 </p>
-                <p className="truncate text-xs text-[#617074] dark:text-[#9BAAA3]">
+                <p className="truncate text-xs text-muted-foreground">
                   {user?.email}
                 </p>
               </div>
 
-              <div className="my-1 border-t border-[#DADDD7] dark:border-[#34413C]" />
+              <div className="my-1 border-t border-border" />
 
               <button
                 type="button"
                 disabled={loggingOut}
                 onClick={() => setLogoutConfirmOpen(true)}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5
-                  text-sm text-[#9B4545] transition-colors hover:bg-red-500/10
+                  text-sm text-destructive transition-colors hover:bg-destructive/10
                   disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <LogOut size={17} />
@@ -203,18 +196,13 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
             aria-expanded={accountOpen}
             title={collapsed ? fullName : undefined}
             onClick={() => setAccountOpen((value) => !value)}
-            className={`flex w-full items-center rounded-xl border border-white/80
-              bg-white/45 p-2.5 text-left
-              shadow-[3px_3px_8px_rgba(32,45,48,0.05),-3px_-3px_8px_rgba(255,255,255,0.75)]
-              transition-colors hover:bg-white/70
-              dark:border-[#34413C] dark:bg-[#1D2624]
-              dark:shadow-[3px_3px_8px_rgba(0,0,0,0.15)]
-              dark:hover:bg-[#26312E]
+            className={`surface-raised flex w-full items-center p-2.5 text-left
+              transition-colors hover:bg-muted
               ${collapsed ? "justify-center" : "gap-3"}`}
           >
             <span
               className="flex size-9 shrink-0 items-center justify-center rounded-xl
-              bg-[#DCE8DF] text-[#285B57] dark:bg-[#2B4038] dark:text-[#A9D4C5]"
+              bg-accent text-accent-foreground"
             >
               <UserRound size={18} />
             </span>
@@ -222,16 +210,16 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
             {!collapsed && (
               <>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-[#202D30] dark:text-[#E7ECE8]">
+                  <span className="block truncate text-sm font-medium text-foreground">
                     {fullName}
                   </span>
-                  <span className="block truncate text-xs text-[#617074] dark:text-[#9BAAA3]">
+                  <span className="block truncate text-xs text-muted-foreground">
                     {user?.email}
                   </span>
                 </span>
                 <ChevronDown
                   size={16}
-                  className={`shrink-0 text-[#617074] transition-transform ${
+                  className={`shrink-0 text-muted-foreground transition-transform ${
                     !accountOpen ? "rotate-180" : ""
                   }`}
                 />
@@ -241,55 +229,15 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
         </div>
       </aside>
 
-      <Dialog.Root
+      <ConfirmationDialog
         open={logoutConfirmOpen}
-        onOpenChange={(open) => {
-          if (!loggingOut) setLogoutConfirmOpen(open);
-        }}
-      >
-        <Dialog.Portal>
-          <Dialog.Backdrop className="fixed inset-0 z-60 bg-[#17201D]/45 backdrop-blur-sm" />
-          <Dialog.Popup
-            className="fixed left-1/2 top-1/2 z-61 w-[calc(100%-2rem)] max-w-md
-              -translate-x-1/2 -translate-y-1/2 rounded-2xl border
-              border-[#DADDD7] bg-[#F0F0EC] p-6 shadow-2xl
-              dark:border-[#34413C] dark:bg-[#1D2624]"
-          >
-            <Dialog.Title className="text-lg font-semibold text-[#202D30] dark:text-[#E7ECE8]">
-              Log out?
-            </Dialog.Title>
-            <Dialog.Description className="mt-2 text-sm text-[#617074] dark:text-[#B1BDB6]">
-              Are you sure you want to log out of your account?
-            </Dialog.Description>
-            <div className="mt-6 flex justify-end gap-3">
-              <Dialog.Close
-                disabled={loggingOut}
-                className="rounded-xl border border-[#DADDD7] px-4 py-2 text-sm
-                  font-medium text-[#202D30] transition-colors hover:bg-white/60
-                  focus-visible:outline-none focus-visible:ring-2
-                  focus-visible:ring-[#285B57] disabled:cursor-not-allowed
-                  disabled:opacity-50 dark:border-[#34413C] dark:text-[#E7ECE8]
-                  dark:hover:bg-white/5 dark:focus-visible:ring-[#83B5A7]"
-              >
-                Cancel
-              </Dialog.Close>
-              <button
-                type="button"
-                disabled={loggingOut}
-                onClick={handleLogout}
-                className="rounded-xl bg-[#9B4545] px-4 py-2 text-sm font-medium
-                  text-white transition-colors hover:bg-[#843A3A]
-                  focus-visible:outline-none focus-visible:ring-2
-                  focus-visible:ring-[#9B4545] focus-visible:ring-offset-2
-                  disabled:cursor-not-allowed disabled:opacity-50
-                  dark:focus-visible:ring-offset-[#1D2624]"
-              >
-                {loggingOut ? "Logging out..." : "Log out"}
-              </button>
-            </div>
-          </Dialog.Popup>
-        </Dialog.Portal>
-      </Dialog.Root>
+        onOpenChange={setLogoutConfirmOpen}
+        title="Log out?"
+        description="Are you sure you want to log out of your account?"
+        confirmLabel="Log out"
+        onConfirm={() => void handleLogout()}
+        isPending={loggingOut}
+      />
     </>
   );
 }
