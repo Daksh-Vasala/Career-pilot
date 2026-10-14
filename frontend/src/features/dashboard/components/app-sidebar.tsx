@@ -86,7 +86,8 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
           ${collapsed ? "w-68 md:w-18" : "w-68 md:w-68"}
           border-r border-border bg-background p-3
           shadow-sidebar
-          transition-[width,transform] duration-300 ease-in-out
+          transition-transform duration-300 ease-in-out
+          md:transition-[width] md:duration-300 md:ease-in-out
           motion-reduce:transition-none
           ${open ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0`}
