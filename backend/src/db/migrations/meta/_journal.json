@@ -99,6 +99,13 @@
       "when": 1792040917673,
       "tag": "0013_swift_talkback",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792057461260,
+      "tag": "0014_outstanding_vulcan",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { getMeService, loginService, registerService } from "./auth.service.ts";
+import {
+  forgotPasswordService,
+  getMeService,
+  loginService,
+  registerService,
+  resetPasswordService,
+} from "./auth.service.ts";
 import { generateToken } from "../../lib/jwt.ts";
 import { setAuthCookie } from "../../lib/auth-cookie.ts";
 import { AuthRequest } from "../../types/express.types.ts";
@@ -81,5 +87,28 @@ export const logout = async (req: AuthRequest, res: Response) => {
   return res.status(200).json({
     success: true,
     message: "User logged out successfull",
+  });
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  await forgotPasswordService(email);
+
+  return res.status(200).json({
+    success: true,
+    message:
+      "If an account exists with that email, you will receive a password reset link shortly.",
+  });
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token, newPassword } = req.body;
+
+  await resetPasswordService(token, newPassword);
+
+  return res.status(200).json({
+    success: true,
+    message: "Password reset successfully. You can now log in.",
   });
 };
