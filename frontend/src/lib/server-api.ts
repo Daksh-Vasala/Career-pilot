@@ -1,6 +1,7 @@
 import "server-only";
 import axios from "axios";
 import { cookies } from "next/headers";
+import { getBackendApiBaseUrl } from "@/lib/backend-api-url";
 import type { DashboardSummaryResponse } from "@/features/dashboard/dashboard.types";
 import type {
   Application,
@@ -26,17 +27,6 @@ interface CollectionResponse<T> {
   data: T[];
 }
 
-function getBackendApiUrl() {
-  const baseUrl =
-    process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
-
-  if (!baseUrl) {
-    throw new Error("Backend API URL is not configured");
-  }
-
-  return baseUrl.replace(/\/+$/, "");
-}
-
 export async function getDashboardSummaryServer() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -46,7 +36,7 @@ export async function getDashboardSummaryServer() {
   }
 
   const response = await axios.get<DashboardSummaryResponse>(
-    `${getBackendApiUrl()}/dashboard/summary`,
+    `${getBackendApiBaseUrl()}/dashboard/summary`,
     {
       headers: {
         Cookie: `token=${token}`,
@@ -72,10 +62,10 @@ export async function getRecentApplicationsServer() {
 
   const [applicationsResponse, jobsResponse] = await Promise.all([
     axios.get<CollectionResponse<Application>>(
-      `${getBackendApiUrl()}/applications`,
+      `${getBackendApiBaseUrl()}/applications`,
       { headers, timeout: 10000 },
     ),
-    axios.get<CollectionResponse<Job>>(`${getBackendApiUrl()}/jobs`, {
+    axios.get<CollectionResponse<Job>>(    `${getBackendApiBaseUrl()}/jobs`, {
       headers,
       timeout: 10000,
     }),
@@ -107,7 +97,7 @@ export async function getResumesServer(): Promise<Resume[]> {
   }
 
   const response = await axios.get<ResumesResponse>(
-    `${getBackendApiUrl()}/resumes`,
+    `${getBackendApiBaseUrl()}/resumes`,
     {
       headers: {
         Cookie: `token=${token}`,
@@ -127,7 +117,7 @@ export async function getJobsServer(): Promise<Job[]> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const response = await axios.get<JobsResponse>(`${getBackendApiUrl()}/jobs`, {
+  const response = await axios.get<JobsResponse>(  `${getBackendApiBaseUrl()}/jobs`, {
     headers: {
       Cookie: `token=${token}`,
     },
@@ -145,7 +135,7 @@ export async function getApplicationsPageDataServer() {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = getBackendApiUrl();
+  const baseUrl = getBackendApiBaseUrl();
   const headers = {
     Cookie: `token=${token}`,
   };
@@ -175,7 +165,7 @@ export async function getJobsPageDataServer() {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = getBackendApiUrl();
+  const baseUrl = getBackendApiBaseUrl();
   const headers = {
     Cookie: `token=${token}`,
   };
@@ -205,7 +195,7 @@ export async function getApplicationDetailsServer(id: string) {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = getBackendApiUrl();
+  const baseUrl = getBackendApiBaseUrl();
   const config = {
     headers: { Cookie: `token=${token}` },
     timeout: 10000,
@@ -239,7 +229,7 @@ export async function getInterviewsServer(): Promise<Interview[]> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = getBackendApiUrl();
+  const baseUrl = getBackendApiBaseUrl();
 
   const response = await axios.get<InterviewsResponse>(
     `${baseUrl}/interviews`,
@@ -272,7 +262,7 @@ export async function getProfileServer(): Promise<UserProfile> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = getBackendApiUrl();
+  const baseUrl = getBackendApiBaseUrl();
 
   const response = await axios.get<ProfileResponse>(`${baseUrl}/profiles`, {
     headers: {
@@ -292,7 +282,7 @@ export async function getRoadmapsServer(): Promise<Roadmap[]> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = getBackendApiUrl();
+  const baseUrl = getBackendApiBaseUrl();
 
   const response = await axios.get<RoadmapsResponse>(`${baseUrl}/roadmaps`, {
     headers: {
@@ -314,7 +304,7 @@ export async function getRoadmapDetailsServer(
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = getBackendApiUrl();
+  const baseUrl = getBackendApiBaseUrl();
 
   const response = await axios.get<RoadmapDetailsResponse>(
     `${baseUrl}/roadmaps/${roadmapId}`,

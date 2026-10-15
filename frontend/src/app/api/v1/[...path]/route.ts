@@ -1,29 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_PREFIX = "/api/v1";
+import { getBackendApiBaseUrl } from "@/lib/backend-api-url";
 
 async function proxyRequest(request: NextRequest) {
-  const backendApiUrl =
-    process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
-
-  if (!backendApiUrl) {
+  if (!process.env.BACKEND_API_URL && !process.env.NEXT_PUBLIC_API_URL) {
     return NextResponse.json(
       { message: "Backend API URL is not configured" },
       { status: 500 },
     );
   }
 
-  const baseUrl = backendApiUrl.replace(/\/+$/, "");
-  const path = request.nextUrl.pathname.slice(API_PREFIX.length);
+  const baseUrl = getBackendApiBaseUrl();
+  const path = request.nextUrl.pathname.slice("/api/v1".length);
   const targetUrl = `${baseUrl}${path}${request.nextUrl.search}`;
   const headers = new Headers();
 
-  for (const name of ["accept", "authorization", "content-type", "cookie"]) {
+  for (const name of [
+    "accept",
+    "access-control-request-headers",
+    "access-control-request-method",
+    "authorization",
+    "content-type",
+    "cookie",
+    "origin",
+  ]) {
     const value = request.headers.get(name);
     if (value) headers.set(name, value);
   }
 
-  const hasBody = request.method !== "GET" && request.method !== "HEAD";
+  const hasBody = !["GET", "HEAD", "OPTIONS"].includes(request.method);
   const upstreamResponse = await fetch(targetUrl, {
     method: request.method,
     headers,
@@ -43,6 +47,7 @@ async function proxyRequest(request: NextRequest) {
       responseHeaders.append(name, value);
     }
   }
+  responseHeaders.set("x-careerpilot-upstream", "backend");
 
   return new NextResponse(upstreamResponse.body, {
     status: upstreamResponse.status,
@@ -57,3 +62,4 @@ export const POST = proxyRequest;
 export const PUT = proxyRequest;
 export const PATCH = proxyRequest;
 export const DELETE = proxyRequest;
+export const OPTIONS = proxyRequest;
