@@ -168,3 +168,39 @@ export const resetPasswordService = async (
       .where(eq(users.id, consumedToken.userId));
   });
 };
+
+export const changePasswordService = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+) => {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId));
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const isMatch = await bcrypt.compare(
+    currentPassword,
+    user.passwordHash
+  );
+
+  if (!isMatch) {
+    throw new ApiError(400, "Current password is incorrect");
+  }
+
+  const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+  await db
+    .update(users)
+    .set({
+      passwordHash: newPasswordHash,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
+
+  return { message: "Password changed successfully" };
+};

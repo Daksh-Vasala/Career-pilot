@@ -103,14 +103,6 @@ export default function LoginPage() {
                 registration={register("password")}
                 error={errors.password?.message}
               />
-              <div className="flex">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-right w-full font-medium text-primary hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Signing in..." : "Sign in"}

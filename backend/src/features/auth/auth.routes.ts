@@ -1,12 +1,14 @@
 import express from "express";
 import { validateBody } from "../middlewares/validate.middleware.ts";
 import {
+  changePasswordSchema,
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
   resetPasswordSchema,
 } from "./auth.validation.ts";
 import {
+  changePassword,
   forgotPassword,
   getMe,
   login,
@@ -37,6 +39,13 @@ router.post(
   "/reset-password",
   validateBody(resetPasswordSchema),
   asyncHandler(resetPassword),
+);
+
+router.patch(
+  "/change-password",
+  authenticate,
+  validateBody(changePasswordSchema),
+  asyncHandler(changePassword),
 );
 
 export default router;

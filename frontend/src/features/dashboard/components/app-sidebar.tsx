@@ -1,24 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
   BriefcaseBusiness,
   ClipboardList,
   CalendarDays,
-  Settings,
-  ChevronDown,
-  LogOut,
-  UserRound,
   X,
   Route,
 } from "lucide-react";
-import { useAuth } from "@/features/auth/auth-context";
-import { ConfirmationDialog } from "@/components/confirmation-dialog";
 
 const navigation = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -27,8 +19,6 @@ const navigation = [
   { label: "Applications", href: "/applications", icon: ClipboardList },
   { label: "Interviews", href: "/interviews", icon: CalendarDays },
   { label: "AI Roadmap", href: "/roadmaps", icon: Route },
-  { label: "Profile", href: "/profile", icon: UserRound },
-  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 interface AppSidebarProps {
@@ -39,33 +29,6 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, logout } = useAuth();
-
-  const [accountOpen, setAccountOpen] = useState(false);
-  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
-
-  async function handleLogout() {
-    try {
-      setLoggingOut(true);
-      await logout();
-      setLogoutConfirmOpen(false);
-      setAccountOpen(false);
-      onClose();
-      router.replace("/login");
-      router.refresh();
-      toast.success("Logged out successfully");
-    } catch {
-      toast.error("Unable to log out. Please try again.");
-    } finally {
-      setLoggingOut(false);
-    }
-  }
-
-  const fullName =
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-    "Your account";
 
   return (
     <>
@@ -123,12 +86,6 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
           )}
         </div>
 
-        {!collapsed && (
-          <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Workspace
-          </p>
-        )}
-
         {/* Navigation */}
         <nav aria-label="Workspace navigation" className="flex flex-col gap-1">
           {navigation.map(({ label, href, icon: Icon }) => {
@@ -162,86 +119,7 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
           })}
         </nav>
 
-        {/* Account menu */}
-        <div className="relative mt-auto border-t border-border pt-3">
-          {accountOpen && (
-            <div
-              className={`surface-raised absolute bottom-full z-10 mb-3 p-2
-                ${collapsed ? "left-full ml-3 w-52" : "inset-x-0"}`}
-            >
-              <div className="truncate px-3 py-2">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {fullName}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {user?.email}
-                </p>
-              </div>
-
-              <div className="my-1 border-t border-border" />
-
-              <button
-                type="button"
-                disabled={loggingOut}
-                onClick={() => setLogoutConfirmOpen(true)}
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5
-                  text-sm text-destructive transition-colors hover:bg-destructive/10
-                  disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <LogOut size={17} />
-                Log out
-              </button>
-            </div>
-          )}
-
-          <button
-            type="button"
-            aria-label="Account menu"
-            aria-expanded={accountOpen}
-            title={collapsed ? fullName : undefined}
-            onClick={() => setAccountOpen((value) => !value)}
-            className={`surface-raised flex w-full items-center p-2.5 text-left
-              transition-colors hover:bg-muted
-              ${collapsed ? "justify-center" : "gap-3"}`}
-          >
-            <span
-              className="flex size-9 shrink-0 items-center justify-center rounded-xl
-              bg-accent text-accent-foreground"
-            >
-              <UserRound size={18} />
-            </span>
-
-            {!collapsed && (
-              <>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-foreground">
-                    {fullName}
-                  </span>
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {user?.email}
-                  </span>
-                </span>
-                <ChevronDown
-                  size={16}
-                  className={`shrink-0 text-muted-foreground transition-transform ${
-                    !accountOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </>
-            )}
-          </button>
-        </div>
       </aside>
-
-      <ConfirmationDialog
-        open={logoutConfirmOpen}
-        onOpenChange={setLogoutConfirmOpen}
-        title="Log out?"
-        description="Are you sure you want to log out of your account?"
-        confirmLabel="Log out"
-        onConfirm={() => void handleLogout()}
-        isPending={loggingOut}
-      />
     </>
   );
 }

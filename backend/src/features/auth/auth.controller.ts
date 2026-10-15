@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  changePasswordService,
   forgotPasswordService,
   getMeService,
   loginService,
@@ -110,5 +111,26 @@ export const resetPassword = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     message: "Password reset successfully. You can now log in.",
+  });
+};
+
+export const changePassword = async (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  const { currentPassword, newPassword } = req.body;
+
+  const result = await changePasswordService(
+    userId,
+    currentPassword,
+    newPassword,
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: result.message,
   });
 };
