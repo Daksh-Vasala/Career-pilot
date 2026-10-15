@@ -26,6 +26,17 @@ interface CollectionResponse<T> {
   data: T[];
 }
 
+function getBackendApiUrl() {
+  const baseUrl =
+    process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
+
+  if (!baseUrl) {
+    throw new Error("Backend API URL is not configured");
+  }
+
+  return baseUrl.replace(/\/+$/, "");
+}
+
 export async function getDashboardSummaryServer() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -35,7 +46,7 @@ export async function getDashboardSummaryServer() {
   }
 
   const response = await axios.get<DashboardSummaryResponse>(
-    `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary`,
+    `${getBackendApiUrl()}/dashboard/summary`,
     {
       headers: {
         Cookie: `token=${token}`,
@@ -61,13 +72,13 @@ export async function getRecentApplicationsServer() {
 
   const [applicationsResponse, jobsResponse] = await Promise.all([
     axios.get<CollectionResponse<Application>>(
-      `${process.env.NEXT_PUBLIC_API_URL}/applications`,
+      `${getBackendApiUrl()}/applications`,
       { headers, timeout: 10000 },
     ),
-    axios.get<CollectionResponse<Job>>(
-      `${process.env.NEXT_PUBLIC_API_URL}/jobs`,
-      { headers, timeout: 10000 },
-    ),
+    axios.get<CollectionResponse<Job>>(`${getBackendApiUrl()}/jobs`, {
+      headers,
+      timeout: 10000,
+    }),
   ]);
 
   const applications = applicationsResponse.data.data
@@ -96,7 +107,7 @@ export async function getResumesServer(): Promise<Resume[]> {
   }
 
   const response = await axios.get<ResumesResponse>(
-    `${process.env.NEXT_PUBLIC_API_URL}/resumes`,
+    `${getBackendApiUrl()}/resumes`,
     {
       headers: {
         Cookie: `token=${token}`,
@@ -116,15 +127,12 @@ export async function getJobsServer(): Promise<Job[]> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const response = await axios.get<JobsResponse>(
-    `${process.env.NEXT_PUBLIC_API_URL}/jobs`,
-    {
-      headers: {
-        Cookie: `token=${token}`,
-      },
-      timeout: 10000,
+  const response = await axios.get<JobsResponse>(`${getBackendApiUrl()}/jobs`, {
+    headers: {
+      Cookie: `token=${token}`,
     },
-  );
+    timeout: 10000,
+  });
 
   return response.data.data;
 }
@@ -137,7 +145,7 @@ export async function getApplicationsPageDataServer() {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = getBackendApiUrl();
   const headers = {
     Cookie: `token=${token}`,
   };
@@ -167,7 +175,7 @@ export async function getJobsPageDataServer() {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = getBackendApiUrl();
   const headers = {
     Cookie: `token=${token}`,
   };
@@ -197,7 +205,7 @@ export async function getApplicationDetailsServer(id: string) {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = getBackendApiUrl();
   const config = {
     headers: { Cookie: `token=${token}` },
     timeout: 10000,
@@ -231,7 +239,7 @@ export async function getInterviewsServer(): Promise<Interview[]> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = getBackendApiUrl();
 
   const response = await axios.get<InterviewsResponse>(
     `${baseUrl}/interviews`,
@@ -264,7 +272,7 @@ export async function getProfileServer(): Promise<UserProfile> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = getBackendApiUrl();
 
   const response = await axios.get<ProfileResponse>(`${baseUrl}/profiles`, {
     headers: {
@@ -284,7 +292,7 @@ export async function getRoadmapsServer(): Promise<Roadmap[]> {
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = getBackendApiUrl();
 
   const response = await axios.get<RoadmapsResponse>(`${baseUrl}/roadmaps`, {
     headers: {
@@ -306,7 +314,7 @@ export async function getRoadmapDetailsServer(
     throw new Error("UNAUTHENTICATED");
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = getBackendApiUrl();
 
   const response = await axios.get<RoadmapDetailsResponse>(
     `${baseUrl}/roadmaps/${roadmapId}`,

@@ -68,14 +68,8 @@ export default function SettingsPage() {
     setLoading(true);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
-      if (!baseUrl) {
-        throw new Error("API URL is not configured");
-      }
-
       const response = await fetch(
-        `${baseUrl}/auth/change-password`,
+        "/api/v1/auth/change-password",
         {
           method: "PATCH",
           headers: {
