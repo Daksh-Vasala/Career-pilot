@@ -8,6 +8,7 @@ import {
   updateRoadmapService,
   updateMilestoneProgressService,
   generateRoadmapService,
+  deleteRoadmapService,
 } from "./roadmap.service.ts";
 import {
   createRoadmapSchema,
@@ -101,10 +102,7 @@ export const updateMilestoneProgress = async (
   });
 };
 
-export const generateRoadmap = async (
-  req: AuthRequest,
-  res: Response,
-) => {
+export const generateRoadmap = async (req: AuthRequest, res: Response) => {
   const userId = req.userId!;
   const roadmapId = String(req.params.id);
 
@@ -116,3 +114,16 @@ export const generateRoadmap = async (
     data: milestones,
   });
 };
+
+export async function deleteRoadmap(req: AuthRequest, res: Response) {
+  const { id } = req.params;
+  const userId = req.userId!;
+
+  const deletedRoadmap = await deleteRoadmapService(String(id), userId);
+
+  return res.status(200).json({
+    success: true,
+    message: "Roadmap deleted successfully",
+    data: deletedRoadmap,
+  });
+}

@@ -200,3 +200,24 @@ export async function generateRoadmapService(
       .returning();
   });
 }
+
+export async function deleteRoadmapService(
+  roadmapId: string,
+  userId: string,
+) {
+  const [deletedRoadmap] = await db
+    .delete(roadmaps)
+    .where(
+      and(
+        eq(roadmaps.id, roadmapId),
+        eq(roadmaps.userId, userId),
+      ),
+    )
+    .returning({ id: roadmaps.id });
+
+  if (!deletedRoadmap) {
+    throw new ApiError(404, "Roadmap not found");
+  }
+
+  return deletedRoadmap;
+}

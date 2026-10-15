@@ -3,6 +3,7 @@ import { authenticate } from "../middlewares/auth.middleware.ts";
 import { asyncHandler } from "../../utils/async-handler.ts";
 import {
   createRoadmap,
+  deleteRoadmap,
   generateRoadmap,
   getRoadmapById,
   getRoadmaps,
@@ -66,5 +67,7 @@ router.post(
   validateParams(roadmapIdParamSchema),
   asyncHandler(generateRoadmap),
 );
+
+router.delete("/:id", validateParams(roadmapIdParamSchema), asyncHandler(deleteRoadmap));
 
 export default router;

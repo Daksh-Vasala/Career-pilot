@@ -15,6 +15,7 @@ import {
   LogOut,
   UserRound,
   X,
+  Route,
 } from "lucide-react";
 import { useAuth } from "@/features/auth/auth-context";
 import { ConfirmationDialog } from "@/components/confirmation-dialog";
@@ -25,6 +26,7 @@ const navigation = [
   { label: "Job Tracker", href: "/jobs", icon: BriefcaseBusiness },
   { label: "Applications", href: "/applications", icon: ClipboardList },
   { label: "Interviews", href: "/interviews", icon: CalendarDays },
+  { label: "AI Roadmap", href: "/roadmaps", icon: Route },
   { label: "Profile", href: "/profile", icon: UserRound },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
