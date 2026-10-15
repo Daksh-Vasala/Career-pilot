@@ -7,6 +7,7 @@ import applicationRoutes from "../features/application/application.routes.ts";
 import aiRoutes from "../features/ai/ai.routes.ts";
 import interviewRoutes from "../features/interview/interview.routes.ts";
 import dashboardRoutes from "../features/dashboard/dashboard.routes.ts";
+import roadmapRoutes from "../features/roadmap/roadmap.routes.ts";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/applications", applicationRoutes);
 router.use("/ai", aiRoutes);
 router.use("/interviews", interviewRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/roadmaps", roadmapRoutes);
 
 export default router;

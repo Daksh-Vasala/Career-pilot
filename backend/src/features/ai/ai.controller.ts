@@ -5,7 +5,6 @@ import {
   getResumeAnalysesByResumeIdService,
   getResumeAnalysisByIdService,
 } from "./ai.service.ts";
-import { ApiError } from "../../utils/api-error.ts";
 
 export const analyzeResume = async (req: AuthRequest, res: Response) => {
   const { resumeId } = req.body;
