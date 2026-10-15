@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const sender = process.env.RESEND_FROM_EMAIL || "CareerPilot <onboarding@resend.dev>";
 
 interface SendPasswordResetEmailParams {
   to: string;
@@ -12,7 +13,7 @@ export const sendPasswordResetEmail = async ({
   resetUrl,
 }: SendPasswordResetEmailParams): Promise<void> => {
   const { error } = await resend.emails.send({
-    from: "CareerPilot <onboarding@resend.dev>",
+    from: sender,
     to: [to],
     subject: "Reset your CareerPilot password",
     html: `

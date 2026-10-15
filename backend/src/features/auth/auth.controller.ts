@@ -26,7 +26,7 @@ export const register = async (req: Request, res: Response) => {
 
   return res.status(201).json({
     success: true,
-    message: "User Registration successfull",
+    message: "User Registered successfully",
     data: user,
   });
 };
@@ -45,7 +45,7 @@ export const login = async (req: Request, res: Response) => {
 
   return res.status(200).json({
     success: true,
-    message: "User logged in successfull",
+    message: "User logged in successfully",
     data: user,
   });
 };
@@ -79,10 +79,12 @@ export const getMe = async (req: AuthRequest, res: Response) => {
 };
 
 export const logout = async (req: AuthRequest, res: Response) => {
+  const isProduction = process.env.NODE_ENV === "production";
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    path: "/",
   });
 
   return res.status(200).json({

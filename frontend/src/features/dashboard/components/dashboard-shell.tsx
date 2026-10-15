@@ -107,7 +107,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <ModeToggle />
             <div className="relative">
               {accountOpen && (
                 <div className="surface-raised absolute right-0 top-full z-40 mt-3
