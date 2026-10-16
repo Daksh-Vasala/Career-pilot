@@ -110,7 +110,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <div className="relative">
               {accountOpen && (
                 <div className="surface-raised absolute right-0 top-full z-40 mt-3
-                  w-56 border-transparent p-2 shadow-none">
+                  w-56 border-border bg-card p-2 shadow-modal">
                   <div className="truncate px-3 py-2">
                     <p className="truncate text-sm font-medium text-foreground">
                       {fullName}
