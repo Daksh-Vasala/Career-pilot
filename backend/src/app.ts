@@ -18,6 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(cookieParser());
 
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "CareerPilot API is running",
+  });
+});
+
 app.use("/api/v1", routes);
 
 app.use(errorMiddleware);
