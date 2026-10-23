@@ -5,10 +5,13 @@ import type {
   ResumeAnalysisResponse,
 } from "@/features/resumes/resume-analysise.types";
 
-export async function createResumeAnalysis(resumeId: string) {
+export async function createResumeAnalysis(
+  resumeId: string,
+  jobDescription?: string,
+) {
   const response = await api.post<ResumeAnalysisResponse>(
     "/ai/resume-analysis",
-    { resumeId },
+    { resumeId, ...(jobDescription?.trim() ? { jobDescription: jobDescription.trim() } : {}) },
   );
 
   return response.data.data;

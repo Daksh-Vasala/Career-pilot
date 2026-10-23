@@ -7,12 +7,14 @@ Auth: JWT is stored in a `token` cookie. Public routes: `/auth/register`, `/auth
 ## Endpoints
 
 ### Auth
+
 - `POST /auth/register` — body: `{ firstName, lastName, email, password }`
 - `POST /auth/login` — body: `{ email, password }`
 - `GET /auth/me` — current user
 - `POST /auth/logout` — sign out
 
 ### Jobs
+
 - `GET /jobs`
 - `POST /jobs` — body: `{ companyName, jobTitle, jobUrl?, location?, employmentType?, salary?, description? }`
 - `GET /jobs/:id`
@@ -20,6 +22,7 @@ Auth: JWT is stored in a `token` cookie. Public routes: `/auth/register`, `/auth
 - `DELETE /jobs/:id`
 
 ### Applications
+
 - `GET /applications`
 - `POST /applications` — body: `{ jobId, status?, appliedAt?, notes?, recruiterName?, recruiterEmail? }`
 - `GET /applications/:id`
@@ -27,10 +30,12 @@ Auth: JWT is stored in a `token` cookie. Public routes: `/auth/register`, `/auth
 - `DELETE /applications/:id`
 
 ### Profile
+
 - `GET /profiles`
 - `PATCH /profiles` — update profile fields
 
 ### Resumes
+
 - `GET /resumes`
 - `POST /resumes` — `multipart/form-data` with `file` and `title`
 - `GET /resumes/:id`
@@ -38,6 +43,7 @@ Auth: JWT is stored in a `token` cookie. Public routes: `/auth/register`, `/auth
 - `DELETE /resumes/:id`
 
 ### Interviews
+
 - `GET /interviews`
 - `POST /interviews` — body: `{ applicationId, status?, interviewType?, scheduledAt?, interviewerName?, meetingLink?, notes?, feedback? }`
 - `GET /interviews/:id`
@@ -45,14 +51,17 @@ Auth: JWT is stored in a `token` cookie. Public routes: `/auth/register`, `/auth
 - `DELETE /interviews/:id`
 
 ### AI
-- `POST /ai/resume-analysis` — body: `{ resumeId }`
+
+- `POST /ai/resume-analysis` — body: `{ resumeId, jobDescription? }`
 - `GET /ai/resume-analysis/:id`
 - `GET /ai/resume-analysis?resumeId=<id>`
 
 ### Dashboard
+
 - `GET /dashboard/summary`
 
 ### Notes
+
 - Responses are JSON.
 - Validation errors return `400`.
 - Unauthorized requests return `401`.

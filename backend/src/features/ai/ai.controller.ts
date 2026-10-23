@@ -7,9 +7,13 @@ import {
 } from "./ai.service.ts";
 
 export const analyzeResume = async (req: AuthRequest, res: Response) => {
-  const { resumeId } = req.body;
+  const { resumeId, jobDescription } = req.body;
 
-  const result = await analyzeResumeService(req.userId!, resumeId);
+  const result = await analyzeResumeService(
+    req.userId!,
+    resumeId,
+    jobDescription,
+  );
 
   res.status(201).json({
     success: true,

@@ -2,12 +2,16 @@ import { and, desc, eq } from "drizzle-orm";
 import { db } from "../../db/index.ts";
 import { resumes } from "../../db/schema/resume.ts";
 import { ApiError } from "../../utils/api-error.ts";
-import { analyzeResumeWithGemini } from "./providers/gemini.provider.ts";
+import {
+  analyzeResumeWithGemini,
+  assessAtsReadinessWithGemini,
+} from "./providers/gemini.provider.ts";
 import { resumeAnalyses } from "../../db/schema/resume-analysis.ts";
 
 export const analyzeResumeService = async (
   userId: string,
   resumeId: string,
+  jobDescription?: string,
 ) => {
   const [resume] = await db
     .select()
@@ -23,6 +27,18 @@ export const analyzeResumeService = async (
   }
 
   const analysis = await analyzeResumeWithGemini(resume.extractedText);
+  let atsReadiness = null;
+  let atsReadinessError: string | undefined;
+
+  try {
+    atsReadiness = await assessAtsReadinessWithGemini(
+      resume.extractedText,
+      jobDescription,
+    );
+  } catch {
+    atsReadinessError =
+      "ATS readiness estimate is unavailable right now. Your resume analysis was saved successfully.";
+  }
 
   const [savedAnalysis] = await db
     .insert(resumeAnalyses)
@@ -30,7 +46,11 @@ export const analyzeResumeService = async (
       userId,
       resumeId,
       model: process.env.GEMINI_MODEL || "gemini-3.5-flash-lite",
-      analysis,
+      analysis: {
+        ...analysis,
+        atsReadiness,
+        ...(atsReadinessError ? { atsReadinessError } : {}),
+      },
     })
     .returning();
 

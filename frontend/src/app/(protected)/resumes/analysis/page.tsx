@@ -20,7 +20,10 @@ import {
   getResumeAnalyses,
 } from "@/features/resumes/resume-analysis.service";
 import type { Resume } from "@/features/resumes/resume.types";
-import type { ResumeAnalysis } from "@/features/resumes/resume-analysise.types";
+import type {
+  AtsReadiness,
+  ResumeAnalysis,
+} from "@/features/resumes/resume-analysise.types";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("en-IN", {
@@ -30,9 +33,23 @@ function formatDate(value: string) {
   });
 }
 
+function hasAtsReadinessResult(value: unknown): value is AtsReadiness {
+  if (!value || typeof value !== "object") return false;
+
+  const result = value as Partial<AtsReadiness>;
+  return (
+    typeof result.score === "number" &&
+    Number.isFinite(result.score) &&
+    typeof result.explanation === "string" &&
+    Array.isArray(result.suggestions) &&
+    result.suggestions.every((suggestion) => typeof suggestion === "string")
+  );
+}
+
 export default function ResumeAnalysisPage() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [selectedResumeId, setSelectedResumeId] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [loadingResumes, setLoadingResumes] = useState(true);
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
@@ -110,7 +127,10 @@ export default function ResumeAnalysisPage() {
     setGenerating(true);
 
     try {
-      const result = await createResumeAnalysis(selectedResumeId);
+      const result = await createResumeAnalysis(
+        selectedResumeId,
+        jobDescription,
+      );
       setAnalysis(result);
       toast.success("Resume analysis completed.");
     } catch {
@@ -172,6 +192,20 @@ export default function ResumeAnalysisPage() {
       </header>
 
       <section className="surface-raised p-5 sm:p-6">
+        <label htmlFor="job-description" className="mb-2 block text-sm font-medium">
+          Job description <span className="font-normal text-muted-foreground">(optional)</span>
+        </label>
+        <textarea
+          id="job-description"
+          value={jobDescription}
+          onChange={(event) => setJobDescription(event.target.value)}
+          maxLength={20000}
+          rows={5}
+          placeholder="Paste a job description for a separate job-specific match estimate."
+          disabled={generating}
+          className="surface-inset mb-5 w-full resize-y px-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        />
+
         <label htmlFor="resume" className="mb-2 block text-sm font-medium">
           Select a resume
         </label>
@@ -251,6 +285,51 @@ export default function ResumeAnalysisPage() {
 
       {!loadingAnalysis && analysis && (
         <>
+          {hasAtsReadinessResult(analysis.analysis.atsReadiness) ? (
+            <section className="surface-raised space-y-4 p-5 sm:p-7">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <Target size={20} className="text-primary" />
+                  <h2 className="text-lg font-semibold">ATS readiness estimate</h2>
+                </div>
+                <p className="text-2xl font-semibold text-primary">
+                  {analysis.analysis.atsReadiness.score}/100
+                </p>
+              </div>
+              <p className="text-sm leading-6 text-muted-foreground">
+                {analysis.analysis.atsReadiness.explanation}
+              </p>
+              <div>
+                <h3 className="font-medium">Suggestions to improve</h3>
+                <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                  {analysis.analysis.atsReadiness.suggestions.map((suggestion, index) => (
+                    <li key={`ats-suggestion-${index}`}>• {suggestion}</li>
+                  ))}
+                </ul>
+              </div>
+              <p className="border-t border-border pt-4 text-xs leading-5 text-muted-foreground">
+                This is an estimate, not a score from an actual employer ATS. It does not guarantee ATS passage
+                or interview selection.
+              </p>
+            </section>
+          ) : analysis.analysis.atsReadiness ? (
+            <section className="surface-raised p-5 sm:p-7">
+              <h2 className="font-semibold">ATS readiness estimate needs refreshing</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Run the analysis again to generate an estimate in the current format.
+              </p>
+            </section>
+          ) : null}
+          {analysis.analysis.atsReadiness === null && (
+            <section className="surface-raised p-5 sm:p-7">
+              <h2 className="font-semibold">ATS readiness estimate unavailable</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {analysis.analysis.atsReadinessError ??
+                  "The ATS assessment could not be completed. Your resume analysis is still available."}
+              </p>
+            </section>
+          )}
+
           <section className="surface-raised p-5 sm:p-7">
             <div className="flex items-center gap-2">
               <Sparkles size={20} className="text-primary" />

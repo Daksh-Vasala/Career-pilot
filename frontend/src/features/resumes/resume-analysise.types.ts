@@ -5,6 +5,14 @@ export interface ResumeAnalysisContent {
   skillsFound: string[];
   recommendations: string[];
   improvementAreas: string[];
+  atsReadiness?: AtsReadiness | null;
+  atsReadinessError?: string;
+}
+
+export interface AtsReadiness {
+  score: number;
+  explanation: string;
+  suggestions: string[];
 }
 
 export interface ResumeAnalysis {
