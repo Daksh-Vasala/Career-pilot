@@ -16,18 +16,48 @@ export default function ResumeUploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const selectedFile = event.target.files?.[0];
+  async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.target;
+    const selectedFile = input.files?.[0];
 
     if (!selectedFile) return;
 
-    if (selectedFile.type !== "application/pdf") {
+    // Don't trust type alone: Drive files can arrive with an empty type
+    const looksLikePdf =
+      selectedFile.type === "application/pdf" ||
+      selectedFile.name.toLowerCase().endsWith(".pdf");
+
+    if (!looksLikePdf) {
       toast.error("Please select a PDF file.");
-      event.target.value = "";
+      input.value = "";
       return;
     }
 
-    setFile(selectedFile);
+    try {
+      // Read the whole file now, while the Drive handle is still valid
+      const buffer = await selectedFile.arrayBuffer();
+
+      // Optional: confirm it's really a PDF (magic bytes "%PDF")
+      const header = new TextDecoder().decode(
+        new Uint8Array(buffer.slice(0, 4)),
+      );
+      if (header !== "%PDF") {
+        toast.error("This file doesn't look like a valid PDF.");
+        input.value = "";
+        return;
+      }
+
+      const safeFile = new File([buffer], selectedFile.name || "resume.pdf", {
+        type: "application/pdf",
+        lastModified: Date.now(),
+      });
+
+      setFile(safeFile); // store the in-memory copy, not the original
+    } catch (err) {
+      console.error("File read failed:", err);
+      toast.error("Couldn't read the file. Please try again.");
+      input.value = "";
+    }
   }
 
   function removeFile() {
