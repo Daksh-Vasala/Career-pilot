@@ -124,8 +124,8 @@ export function ApplicationDetailsClient({
       await deleteApplication(initialApplication.id);
       toast.success("Application deleted.");
       setDeleteConfirmOpen(false);
-      router.push("/applications");
       router.refresh();
+      router.push("/applications");
     } catch (error) {
       console.error("Failed to delete application:", error);
       toast.error("Could not delete application. Please try again.");

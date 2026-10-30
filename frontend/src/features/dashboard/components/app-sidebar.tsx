@@ -11,6 +11,7 @@ import {
   X,
   Route,
 } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 
 const navigation = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -69,9 +70,7 @@ export function AppSidebar({ open, onClose, collapsed }: AppSidebarProps) {
             className="min-w-0"
             aria-label="CareerPilot home"
           >
-            <span className="text-lg font-semibold tracking-tight text-primary">
-              {collapsed ? "C" : "CareerPilot"}
-            </span>
+            <Logo showText={!collapsed} className="text-lg" />
           </Link>
 
           {!collapsed && (

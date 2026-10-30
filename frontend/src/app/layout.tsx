@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CareerPilot | Your Career Workspace",
+  title: { default: "CareerPilot", template: "%s | CareerPilot" },
   description:
-    "Manage job applications, resumes, interviews, and your career progress in one place.",
+    "Track applications, analyze resumes with AI, and prepare for interviews in one workspace.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

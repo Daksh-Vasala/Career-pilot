@@ -107,8 +107,8 @@ export function RoadmapDetailClient({
 
     try {
       await deleteRoadmap(roadmap.id);
-      router.replace("/roadmaps");
       router.refresh();
+      router.replace("/roadmaps");
     } catch (error) {
       setErrorMessage(
         getErrorMessage(

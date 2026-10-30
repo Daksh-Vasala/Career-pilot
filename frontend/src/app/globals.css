@@ -8,6 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-career: var(--brand-career);
+  --color-brand-pilot: var(--brand-pilot);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-primary: var(--primary);
@@ -40,6 +42,8 @@
 
 :root {
   color-scheme: light;
+  --brand-career: #1F2A28;
+  --brand-pilot: #235550;
   --background: #f2f1ec;
   --foreground: #202d30;
   --card: #f2f1ec;
@@ -68,6 +72,8 @@
 
 .dark {
   color-scheme: dark;
+  --brand-career: #F3F1EC;
+  --brand-pilot: #5FB3A1;
   --background: #191f1d;
   --foreground: #e7ece8;
   --card: #1e2825;

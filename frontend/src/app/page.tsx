@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Logo } from "@/components/brand/Logo";
 
 const features = [
   {
@@ -76,9 +77,9 @@ export default function Home() {
           <Link
             href="/"
             aria-label="CareerPilot home"
-            className="shrink-0 text-2xl font-bold tracking-tight"
+            className="shrink-0"
           >
-            CareerPilot<span className="text-primary">.</span>
+            <Logo hideTextOnMobile className="text-2xl" />
           </Link>
 
           <div className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
@@ -372,10 +373,10 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
           <Link
             href="/"
-            className="text-lg font-bold tracking-tight"
+            className="shrink-0"
             aria-label="CareerPilot home"
           >
-            CareerPilot<span className="text-primary">.</span>
+            <Logo className="text-lg" />
           </Link>
           <p className="text-sm text-muted-foreground">
             © 2026 CareerPilot. Built for your next move.

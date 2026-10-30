@@ -87,8 +87,8 @@ export default function ResumeUploadPage() {
       await uploadResume(title.trim(), file);
 
       toast.success("Resume uploaded successfully.");
-      router.push("/resumes");
       router.refresh();
+      router.push("/resumes");
     } catch {
       toast.error("Failed to upload resume. Please try again.");
     } finally {

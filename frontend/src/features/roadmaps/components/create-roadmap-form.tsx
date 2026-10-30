@@ -73,8 +73,8 @@ export function CreateRoadmapForm() {
         currentSkills: skills,
       });
 
-      router.push(`/roadmaps/${response.data.data.id}`);
       router.refresh();
+      router.push(`/roadmaps/${response.data.data.id}`);
     } catch (error) {
       const axiosError = error as AxiosError<{ message?: string }>;
       setSubmitError(

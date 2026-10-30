@@ -4,13 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import FormField from "@/features/auth/components/form-field";
 import { useForm } from "react-hook-form";
 import { loginInput } from "@/features/auth/auth.validations";
@@ -20,6 +14,7 @@ import PasswordInput from "@/features/auth/components/password-input";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/auth-context";
+import { Logo } from "@/components/brand/Logo";
 
 type LoginFormValues = z.infer<typeof loginInput>;
 
@@ -58,26 +53,19 @@ export default function LoginPage() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-background px-4 py-12 text-foreground">
-      <div className="absolute right-5 top-5">
-        <ModeToggle />
-      </div>
-
       <Card className="w-full max-w-md rounded-2xl border-border bg-card shadow-[6px_6px_14px_#D7D8D2,-6px_-6px_14px_#FFFFFF] dark:shadow-[6px_6px_14px_#101614,-6px_-6px_14px_#222D29]">
-        <CardHeader className="space-y-2 pb-6">
+        <CardHeader className="space-y-4 pb-6">
           <Link
             href="/"
-            className="mb-3 text-sm text-muted-foreground hover:text-primary"
+            aria-label="CareerPilot home"
+            className="inline-flex self-start"
           >
-            ← Back to CareerPilot
+            <Logo className="text-lg" />
           </Link>
 
           <CardTitle className="text-2xl font-semibold tracking-tight">
             Welcome back
           </CardTitle>
-
-          <CardDescription>
-            Sign in to continue managing your career.
-          </CardDescription>
         </CardHeader>
 
         <CardContent>
