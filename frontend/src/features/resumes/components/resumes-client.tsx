@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   FileText,
   Upload,
@@ -38,6 +39,7 @@ function formatDate(date: string) {
 }
 
 export function ResumesClient({ initialResumes }: ResumesClientProps) {
+  const router = useRouter();
   const [resumes, setResumes] = useState<Resume[]>(initialResumes);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -58,6 +60,24 @@ export function ResumesClient({ initialResumes }: ResumesClientProps) {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has("refresh")) return;
+
+    async function refreshAfterUpload() {
+      try {
+        const data = await getResumes();
+        setResumes(data);
+      } catch {
+        setError(true);
+        toast.error("Failed to load resumes.");
+      } finally {
+        router.replace("/resumes", { scroll: false });
+      }
+    }
+
+    void refreshAfterUpload();
+  }, [router]);
 
   async function handleDelete() {
     if (!resumeToDelete) return;
